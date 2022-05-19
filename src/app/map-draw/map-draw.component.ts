@@ -13,6 +13,8 @@ const DRAWING_COMMIT = 'editable:drawing:commit';
 })
 export class MapDrawComponent implements OnInit {
 
+
+
   title = 'leafletAngular';
   map!: L.Map;
 
@@ -79,19 +81,27 @@ export class MapDrawComponent implements OnInit {
   
   }*/
 
+   
+
   //FUNCTION THAT CREATES A LISTENER OF BUTTONS THAT ALLOWS TO DRAW IN MAP 
   onClickDraw(drawOption: string) {
+    
     this.map.removeEventListener('click')
     this.map.addEventListener(DRAWING_COMMIT, (event: any) => {
       this.map.on('click', <LeafletMouseEvent>(e: any) => {
+        let coord = document.getElementById("coor"); 
+        if(coord != null){
+          coord.textContent = e.latlng.lat, e.latlng.lng;}
         let geometryLayer = this.handleClickDrawOption(drawOption, e);
         this.map.editTools.startPolygon(undefined);
         // if(geometryLayer){
         // geometryLayer.addTo(this.map); 
         // }
+        console.log(geometryLayer)
       });
     });
     console.log(drawOption)
+    
   }
 
   //FUNCTION THAT DETECTS WHICH BUTTON AS CLICK AND EXECUTE A DETERMINATE TASK ACCORDING THE BUTTON CHOOSEN
