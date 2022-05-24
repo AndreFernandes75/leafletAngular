@@ -2,9 +2,17 @@ import { Component, OnInit } from '@angular/core';
 
 import * as L from 'leaflet';
 
+export { ZERO_OPACITY, HALF_OPACITY, DRAWING_COMMIT };
+
 const ZERO_OPACITY = 0;
 const HALF_OPACITY = 0.5;
 const DRAWING_COMMIT = 'editable:drawing:commit';
+
+private lineOptions: L.PolylineOptions = {
+  color: '#ff0000',
+  lineJoin: 'round',
+  };
+
 
 @Component({
   selector: 'app-map-draw',
@@ -81,30 +89,33 @@ export class MapDrawComponent implements OnInit {
   
   }*/
 
-   
+
 
   //FUNCTION THAT CREATES A LISTENER OF BUTTONS THAT ALLOWS TO DRAW IN MAP 
   onClickDraw(drawOption: string) {
-    
+
     this.map.removeEventListener('click')
     this.map.addEventListener(DRAWING_COMMIT, (event: any) => {
       this.map.on('click', <LeafletMouseEvent>(e: any) => {
-        let coord = document.getElementById("coor"); 
-        if(coord != null){
-          coord.textContent = e.latlng.lat, e.latlng.lng;}
+
+        let coord = document.getElementById("coor");
+        if (coord != null) {
+          coord.textContent = e.latlng.lat, e.latlng.lng;
+        }
         let geometryLayer = this.handleClickDrawOption(drawOption, e);
-        this.map.editTools.startPolygon(undefined);
-        // if(geometryLayer){
-        // geometryLayer.addTo(this.map); 
-        // }
-        console.log(geometryLayer)
+        //this.map.editTools.startPolygon(undefined);
+
+        geometryLayer?.addTo(this.map)
+
+
+
       });
     });
-    console.log(drawOption)
-    
+    console.log(drawOption);
+
   }
 
-  //FUNCTION THAT DETECTS WHICH BUTTON AS CLICK AND EXECUTE A DETERMINATE TASK ACCORDING THE BUTTON CHOOSEN
+  //FUNCTION THAT DETECTS WHICH BUTTON AS CLICK AND EXECUTE A DETERMINATE TASK ACCORDING THE OPTION CHOOSEN
   handleClickDrawOption(action: string, event: any): L.Marker | L.Circle | L.Polygon | undefined {
 
     //let marker = L.marker([e.latlng.lat,e.latlng.lng]).addTo(this.map);
@@ -130,5 +141,14 @@ export class MapDrawComponent implements OnInit {
         break;
     }
   }
+
+  // private drawPolygon(lineOptions: L.PolylineOptions): void {
+  //   this.map.addEventListener(DRAWING_COMMIT, (event) => {
+  //   const layer: L.Polygon = event.layer;
+  //   this.polygonArea = layer;
+  //   this.observeDrawingLayer(layer, event.type);
+  //   });
+  //   this.map.editTools.startPolygon(undefined, lineOptions);
+  //   }
 
 }
