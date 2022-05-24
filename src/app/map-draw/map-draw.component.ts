@@ -4,14 +4,12 @@ import * as L from 'leaflet';
 
 export { ZERO_OPACITY, HALF_OPACITY, DRAWING_COMMIT };
 
+
+
 const ZERO_OPACITY = 0;
 const HALF_OPACITY = 0.5;
 const DRAWING_COMMIT = 'editable:drawing:commit';
 
-private lineOptions: L.PolylineOptions = {
-  color: '#ff0000',
-  lineJoin: 'round',
-  };
 
 
 @Component({
@@ -21,7 +19,12 @@ private lineOptions: L.PolylineOptions = {
 })
 export class MapDrawComponent implements OnInit {
 
+  public lineOptions: L.PolylineOptions =
+    {
+      color: '#ff0000', lineJoin: 'round',
+    };
 
+  private polygonArea?: L.Polygon;
 
   title = 'leafletAngular';
   map!: L.Map;
@@ -92,33 +95,71 @@ export class MapDrawComponent implements OnInit {
 
 
   //FUNCTION THAT CREATES A LISTENER OF BUTTONS THAT ALLOWS TO DRAW IN MAP 
-  onClickDraw(drawOption: string) {
-
-    this.map.removeEventListener('click')
-    this.map.addEventListener(DRAWING_COMMIT, (event: any) => {
-      this.map.on('click', <LeafletMouseEvent>(e: any) => {
-
-        let coord = document.getElementById("coor");
-        if (coord != null) {
-          coord.textContent = e.latlng.lat, e.latlng.lng;
-        }
-        let geometryLayer = this.handleClickDrawOption(drawOption, e);
-        //this.map.editTools.startPolygon(undefined);
-
-        geometryLayer?.addTo(this.map)
 
 
 
-      });
+  // onClickDraw(drawOption: string) {
+
+
+  //   this.map.removeEventListener('click')
+
+
+  //   this.map.addEventListener(DRAWING_COMMIT, (event: any) => {
+  //     this.map.on('click', <LeafletMouseEvent>(e: any) => {
+
+  //       let coord = document.getElementById("coor");
+  //       if (coord != null) {
+  //         coord.textContent = e.latlng.lat, e.latlng.lng;
+  //       }
+  //       let geometryLayer = this.handleClickDrawOption(drawOption, event.type)?.addTo(this.map);
+
+
+
+  //       geometryLayer?.addTo(this.map)
+  //       console.log(geometryLayer)
+
+
+
+  //     }); this.map.editTools.startPolygon(undefined);
+  //   });
+
+
+  //   console.log(drawOption);
+
+
+  // }
+
+  
+
+  public drawPolygon(lineOptions: L.PolylineOptions): void {
+    this.map.addEventListener(DRAWING_COMMIT, (event) => {
+      const layer: L.Polygon = event.layer;
+      // const shape: L.LatLng[] = layer.getLatLngs() as L.LatLng[];
+      // layer.disableEdit();
+      this.polygonArea = layer;
+      this.observeDrawingLayer(layer, event.type);
     });
-    console.log(drawOption);
+    this.map.editTools.startPolygon(undefined,lineOptions);
+    
 
   }
 
+  observeDrawingLayer(
+    layer: L.Polygon | L.Polyline | L.Marker,
+    type: string
+  ) {
+    //const wkt = toWkt(layer);
+    //if (wkt) this.drawingLayer$.next({ wkt, layer, type });
+  }
+
+
+
   //FUNCTION THAT DETECTS WHICH BUTTON AS CLICK AND EXECUTE A DETERMINATE TASK ACCORDING THE OPTION CHOOSEN
-  handleClickDrawOption(action: string, event: any): L.Marker | L.Circle | L.Polygon | undefined {
+  handleClickDrawOption(action: any, event: any): L.Marker | L.Circle | L.Polygon | undefined {
 
     //let marker = L.marker([e.latlng.lat,e.latlng.lng]).addTo(this.map);
+
+
 
     switch (action) {
       case "marker":
@@ -142,13 +183,20 @@ export class MapDrawComponent implements OnInit {
     }
   }
 
-  // private drawPolygon(lineOptions: L.PolylineOptions): void {
+  // private lineOptions: L.PolylineOptions = {
+  //   color: '#ff0000',
+  //   lineJoin: 'round',
+  //   };
+  //   private drawPolygon(lineOptions: L.PolylineOptions): void {
   //   this.map.addEventListener(DRAWING_COMMIT, (event) => {
   //   const layer: L.Polygon = event.layer;
+  //   // const shape: L.LatLng[] = layer.getLatLngs() as L.LatLng[];
+  //   // layer.disableEdit();
   //   this.polygonArea = layer;
   //   this.observeDrawingLayer(layer, event.type);
   //   });
   //   this.map.editTools.startPolygon(undefined, lineOptions);
   //   }
+
 
 }

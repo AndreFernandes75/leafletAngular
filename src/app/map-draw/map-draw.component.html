@@ -26,20 +26,20 @@
         <!--POLYGON ICON-->
         <img src="/assets/polygon.svg" class="h-8 w-8 ">
         <!--BUTTON MARKER-->
-        <button (click)="onClickDraw('marker')">
+        <button>
             <p class="text-white hover:text-black bg-gradient-to-b from-blue-500 to-blue-600 p-2 rounded mt-2">Draw a
                 marker
                 point
             </p>
         </button>
         <!--BUTTON CIRCLE-->
-        <button (click)="onClickDraw('circle')">
+        <button>
             <p class="text-white hover:text-black bg-gradient-to-b from-blue-500 to-blue-600 p-2 rounded mt-2">Draw a
                 circle
             </p>
         </button>
         <!--BUTTON POLYGON-->
-        <button (click)="onClickDraw('polygon')">
+        <button (click)="drawPolygon(lineOptions)">
             <p class="text-white hover:text-black bg-gradient-to-b from-blue-500 to-blue-600 p-2 rounded mt-2">Draw a
                 polygon
             </p>
