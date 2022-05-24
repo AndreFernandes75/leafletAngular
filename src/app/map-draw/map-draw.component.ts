@@ -19,7 +19,7 @@ const DRAWING_COMMIT = 'editable:drawing:commit';
 })
 export class MapDrawComponent implements OnInit {
 
-  public lineOptions: L.PolylineOptions =
+  lineOptions: L.PolylineOptions =
     {
       color: '#ff0000', lineJoin: 'round',
     };
@@ -129,17 +129,19 @@ export class MapDrawComponent implements OnInit {
 
   // }
 
-  
+  drawPolygon(lineOptions: L.PolylineOptions): void {
 
-  public drawPolygon(lineOptions: L.PolylineOptions): void {
     this.map.addEventListener(DRAWING_COMMIT, (event) => {
       const layer: L.Polygon = event.layer;
-      // const shape: L.LatLng[] = layer.getLatLngs() as L.LatLng[];
-      // layer.disableEdit();
+        layer.disableEdit();;
+      
       this.polygonArea = layer;
       this.observeDrawingLayer(layer, event.type);
+      this.map.editTools.startPolygon(undefined, lineOptions);
     });
-    this.map.editTools.startPolygon(undefined,lineOptions);
+
+
+
     
 
   }
