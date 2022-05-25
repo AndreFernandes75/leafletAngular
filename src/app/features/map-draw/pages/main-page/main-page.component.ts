@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { MapService } from '@core';
 
 @Component({
   selector: 'app-main-page',
@@ -7,7 +8,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MainPageComponent implements OnInit {
 
-  constructor() { }
+  constructor(public mapService:MapService) { }
 
   ngOnInit(): void {
   }

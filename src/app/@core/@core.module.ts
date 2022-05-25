@@ -1,12 +1,16 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MapService } from '../../map.service';
 
 
 
 @NgModule({
   declarations: [],
   imports: [
-    CommonModule
-  ]
+    CommonModule,
+    
+  ],
+  exports:[
+  ],
 })
-export class @coreModule { }
+export class coreModule { }
