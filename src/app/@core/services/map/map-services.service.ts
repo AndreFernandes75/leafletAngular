@@ -27,6 +27,8 @@ export class MapService implements OnInit {
 
   title = 'leafletAngular';
   map!: L.Map;
+  
+  
 
   ngOnInit(): void {
     //CREATING A MAP WITH COORDINATES IN PORTUGAL
@@ -183,6 +185,8 @@ export class MapService implements OnInit {
         return
         break;
     }
+
+    
   }
 
   // private lineOptions: L.PolylineOptions = {

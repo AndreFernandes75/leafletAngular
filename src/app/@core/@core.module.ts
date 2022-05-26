@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MapService } from '../../map.service';
+import { MapService } from './services';
+
 
 
 
@@ -11,6 +12,11 @@ import { MapService } from '../../map.service';
     
   ],
   exports:[
+    
   ],
+  providers:[
+    MapService
+  ]
+  
 })
 export class coreModule { }

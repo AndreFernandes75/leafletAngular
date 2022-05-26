@@ -6,7 +6,9 @@
     <p class="text-white text-center text-3xl font-bold">Customize your map</p>
 </div>
 <!--MAP-->
-<div id="map"></div>
+
+<app-map-draw  id="map"></app-map-draw>
+
 <!--FOOTER TITLES-->
 <div class="grid justify-items-center p-2">
     <p class="font-bold">Coordinates:</p>
@@ -39,7 +41,7 @@
             </p>
         </button>
         <!--BUTTON POLYGON-->
-        <button (click)="this.mapService.drawPolygon(lineOptions)">
+        <button (click)="this.mapService.drawPolygon(this.mapService.lineOptions)">
             <p class="text-white hover:text-black bg-gradient-to-b from-blue-500 to-blue-600 p-2 rounded mt-2">Draw a
                 polygon
             </p>
