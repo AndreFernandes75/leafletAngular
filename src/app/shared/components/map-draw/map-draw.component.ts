@@ -16,7 +16,7 @@ export class MapDrawComponent implements OnInit{
   
 
   ngOnInit(): void {
-    this.map = L.map('map', { editable: true }).setView([38.72726949553772, -9.13994942204751], 13);
+    this.map = L.map('map', { editable: true }).setView([38.72726949553772, -9.13994942204751], 12);
 
     //ADDING LEAFLET TO THE MAP
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
