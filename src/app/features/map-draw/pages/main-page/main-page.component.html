@@ -26,7 +26,7 @@
         <!--POLYGON ICON-->
         <img src="/assets/polygon.svg" class="h-8 w-8 ">
         <!--BUTTON MARKER-->
-        <button>
+        <button (click)="this.mapService.pinMarker(this.mapService.markerOptions)">
             <p class="text-white hover:text-black bg-gradient-to-b from-blue-500 to-blue-600 p-2 rounded mt-2">Draw a
                 marker
                 point

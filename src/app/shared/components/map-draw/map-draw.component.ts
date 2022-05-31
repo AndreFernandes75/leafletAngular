@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import * as L from 'leaflet';
+import { MapService } from '@core';
 
 @Component({
   selector: 'app-map-draw',
@@ -9,21 +10,21 @@ import * as L from 'leaflet';
 
 })
 export class MapDrawComponent implements OnInit{
+
+  constructor(public mapService:MapService ) { }
  
   @Input() id!: string;
-  map!: L.Map;
+
+
+  
 
   
 
   ngOnInit(): void {
-    this.map = L.map('map', { editable: true }).setView([38.72726949553772, -9.13994942204751], 12);
+  this.mapService.initializeMap('map',[38.72726949553772,-9.13994942204751],11);
 
-    //ADDING LEAFLET TO THE MAP
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(this.map);
-
-  
   }
+
+ 
 
 }

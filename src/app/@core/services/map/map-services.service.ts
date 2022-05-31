@@ -1,4 +1,4 @@
-import { Component, Injectable, OnInit } from '@angular/core';
+import { Component, Injectable } from '@angular/core';
 
 
 import * as L from 'leaflet';
@@ -12,33 +12,115 @@ const HALF_OPACITY = 0.5;
 const DRAWING_COMMIT = 'editable:drawing:commit';
 
 
- @Injectable({
-   providedIn:'root'
- })
+@Injectable({
+  providedIn: 'root'
+})
 
-export class MapService implements OnInit {
+export class MapService {
+
+  namesOfBaseMaps = {
+    'Google Maps': L.tileLayer(
+      'https://mt.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
+      {
+        id: 'googleMaps',
+      }
+    ),
+    'Google Terrain Hybrid': L.tileLayer(
+      'https://mt.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',
+      {
+        id: 'googleTerrainHybrid',
+      }
+    ),
+    'Google Satellite': L.tileLayer(
+      'https://mt.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
+      {
+        id: 'googleSatellite',
+      }
+    ),
+    'Google Satellite Hybrid': L.tileLayer(
+      'https://mt.google.com/vt/lyrs=y&x={x}&y={y}&z={z}',
+      {
+        id: 'googleSatelliteHybrid',
+      }
+    ),
+    'Wikimedia Map': L.tileLayer(
+      'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png',
+      {
+        id: 'wikimediaMap',
+        attribution: 'OpenStreetMap contributors, under ODbL',
+      }
+    ),
+    'Esri Ocean': L.tileLayer(
+      'https://services.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}',
+      {
+        id: 'EsriOcean',
+        attribution: '',
+      }
+    ),
+    'Esri Satellite': L.tileLayer(
+      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+      {
+        id: 'EsriSatellite',
+        attribution: '',
+      }
+    ),
+    'Esri Topo World': L.tileLayer(
+      'http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+      {
+        id: 'EsriTopoWorld',
+        attribution: '',
+      }
+    ),
+    'OpenStreetMap Standard': L.tileLayer(
+      'http://tile.openstreetmap.org/{z}/{x}/{y}.png',
+      {
+        id: 'OpenStreetMapStandard',
+        attribution: 'OpenStreetMap contributors, CC-BY-SA',
+      }
+    ),
+  };
 
   public lineOptions: L.PolylineOptions =
     {
       color: '#ff0000', lineJoin: 'round',
     };
 
+
+
   private polygonArea?: L.Polygon;
 
   title = 'leafletAngular';
-  map!: L.Map;
-  
-  
+  private map!: L.Map;
+  private markerArea?: L.Marker;
 
-  ngOnInit(): void {
-    //CREATING A MAP WITH COORDINATES IN PORTUGAL
-    this.map = L.map('map', { editable: true }).setView([38.72726949553772, -9.13994942204751], 13);
+  private markerIcon = L.icon({
+    iconUrl: 'assets/img/marker.svg',
+    iconSize: [38, 95], // size of the icon
+    shadowSize: [50, 64], // size of the shadow
+    iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
+    shadowAnchor: [4, 62], // the same for the shadow
+    popupAnchor: [-3, -76], // point from which the popup should open relative to the iconAnchor
+  });
 
-    //ADDING LEAFLET TO THE MAP
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(this.map);
+  private pointMarker: any;
+  public getPoint: boolean = false;
+  public scale?: number;
+
+  public removePointMarker() {
+    if (this.pointMarker !== undefined) {
+      this.map.removeLayer(this.pointMarker);
+      this.pointMarker = undefined;
+    }
   }
+
+  public markerOptions: L.MarkerOptions = {
+    icon: this.markerIcon,
+  };
+
+
+
+
+ 
 
   //ngAfterViewInit(): void {
   //var map = L.map('map').setView([38.72726949553772, -9.13994942204751], 13);
@@ -130,22 +212,68 @@ export class MapService implements OnInit {
 
   // }
 
+  public initializeMap(
+    divId: string,
+    center: [number, number],
+    initialZoom: number
+  ): void {
+    const southWest = L.latLng(-89.98155760646617, -180),
+      northEast = L.latLng(89.99346179538875, 180);
+    const bounds = L.latLngBounds(southWest, northEast);
+    this.map = L.map(divId, {
+      editable: true,
+      maxBounds: bounds,
+      attributionControl: false,
+      minZoom: 3,
+      zoomControl: false,
+      maxBoundsViscosity: 1.0,
+    });
+    this.map.setView(center, initialZoom);
+    L.control.layers(this.namesOfBaseMaps).addTo(this.map);
+    this.map.on('click', (event: any) => {
+      if (this.getPoint) {
+        if (this.pointMarker !== undefined) {
+          this.removePointMarker();
+        }
+        this.getPoint = false;
+        const coords = L.latLng(event.latlng.lat, event.latlng.lng);
+        const point = this.map.latLngToContainerPoint(coords);
+        this.pointMarker = L.marker([coords.lat, coords.lng], {
+          icon: this.markerIcon,
+        }).addTo(this.map);
+      }
+    });
+  }
+
+
+
   drawPolygon(lineOptions: L.PolylineOptions): void {
+
 
     this.map.addEventListener(DRAWING_COMMIT, (event) => {
       const layer: L.Polygon = event.layer;
-        layer.disableEdit();;
-      
+      layer.disableEdit();;
+
       this.polygonArea = layer;
       this.observeDrawingLayer(layer, event.type);
       //this.map.editTools.startPolygon(undefined, lineOptions);
-     console.log("adadad")
+      console.log("adadad")
     });
 
 
 
-    
 
+
+  }
+
+  pinMarker(markerOptions: L.MarkerOptions) {
+    this.map?.addEventListener(DRAWING_COMMIT, (event) => {
+      const layer = event.layer;
+      // layer.disableEdit();
+      this.markerArea = layer;
+      this.observeDrawingLayer(layer, event.type);
+    });
+    this.map?.editTools.startMarker(undefined, markerOptions);
   }
 
   observeDrawingLayer(
@@ -186,7 +314,7 @@ export class MapService implements OnInit {
         break;
     }
 
-    
+
   }
 
   // private lineOptions: L.PolylineOptions = {
