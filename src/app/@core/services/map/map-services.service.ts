@@ -4,6 +4,7 @@ import { Component, Injectable } from '@angular/core';
 import * as L from 'leaflet';
 import 'leaflet-editable';
 import 'leaflet';
+import { on } from 'events';
 
 
 export { ZERO_OPACITY, HALF_OPACITY, DRAWING_COMMIT };
@@ -26,9 +27,9 @@ export class MapService {
       'https://mt.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
       {
         id: 'googleMaps',
-        
+
       }
-      
+
     ),
     'Google Terrain Hybrid': L.tileLayer(
       'https://mt.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',
@@ -107,7 +108,7 @@ export class MapService {
     popupAnchor: [-3, -76], // point from which the popup should open relative to the iconAnchor
   });
 
-  private pointMarker: any;
+  public pointMarker: any;
   public getPoint: boolean = false;
   public scale?: number;
 
@@ -123,6 +124,8 @@ export class MapService {
   };
 
   private lineArea: any;
+  public drawOptions: any;
+  public coordinates: any;
 
 
   public initializeMap(
@@ -153,24 +156,21 @@ export class MapService {
         const point = this.map.latLngToContainerPoint(coords);
         this.pointMarker = L.marker([coords.lat, coords.lng], {
           icon: this.markerIcon,
+          
         }).addTo(this.map);
+        console.log(this.pointMarker)
       }
     });
   }
 
 
-
-
-
- 
   
-
 
   observeDrawingLayer(
     layer: L.Polygon | L.Polyline | L.Marker,
     type: string
   ) {
-
+   
 
     //const wkt = toWkt(layer);
     //if (wkt) this.drawingLayer$.next({ wkt, layer, type });
@@ -209,35 +209,62 @@ export class MapService {
 
   }
 
-  
+
 
   drawPolygon(lineOptions: L.PolylineOptions): void {
-   
+
     this.map.addEventListener(DRAWING_COMMIT, (event) => {
       const layer: L.Polygon = event.layer;
       //layer.disableEdit();;
+      
       this.polygonArea = layer;
       this.observeDrawingLayer(layer, event.type);
+      
      
     });
     this.map.editTools.startPolygon(undefined, lineOptions);
    
 
-
   }
 
+  
+
   pinMarker(markerOptions: L.MarkerOptions) {
+    
     this.map?.addEventListener(DRAWING_COMMIT, (event) => {
       const layer = event.layer;
       // layer.disableEdit();
       this.markerArea = layer;
       this.observeDrawingLayer(layer, event.type);
-      
+      this.coordinates = layer._latlng
+     
     });
     this.map?.editTools.startMarker(undefined, markerOptions);
+   
+    
+    
   }
 
 
   
+
+  drawCircle(lineOptions: L.CircleMarkerOptions): void {
+
+    this.map.addEventListener(DRAWING_COMMIT, (event) => {
+      const layer: L.Polygon = event.layer;
+      //layer.disableEdit();;
+      this.polygonArea = layer;
+      this.observeDrawingLayer(layer, event.type);
+      //clear getBounds() because gets error on click again on marker
+      //this.coordinates = layer.getBounds().getCenter();
+
+    });
+    this.map.editTools.startCircle(undefined, lineOptions);
+    
+
+  }
+
+
+
 
 }

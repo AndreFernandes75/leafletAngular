@@ -9,8 +9,8 @@
 <app-map-draw  id="map"></app-map-draw>
 <!--FOOTER TITLES-->
 <div class="grid justify-items-center p-2">
-    <p class="font-bold">Coordinates:</p>
-    <p id="coor">&nbsp;</p>
+    <p class="font-bold">Coordinates: </p>
+    <p id="coor">&nbsp; {{this.mapService.coordinates}}</p>
 </div>
 <div class="bg-gradient-to-b from-blue-500 to-blue-600 border-t-4 border-white p-2 grid justify-items-center">
     <p class="text-white text-2xl ">Choose your points</p>
@@ -33,7 +33,7 @@
             </p>
         </button>
         <!--BUTTON CIRCLE-->
-        <button>
+        <button (click)="this.mapService.drawCircle(this.mapService.lineOptions)">
             <p class="text-white hover:text-black bg-gradient-to-b from-blue-500 to-blue-600 p-2 rounded mt-2">Draw a
                 circle
             </p>
