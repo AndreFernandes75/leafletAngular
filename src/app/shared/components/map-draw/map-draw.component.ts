@@ -16,15 +16,10 @@ export class MapDrawComponent implements OnInit{
   @Input() id!: string;
 
 
-  
-
-  
-
   ngOnInit(): void {
   this.mapService.initializeMap('map',[38.72726949553772,-9.13994942204751],11);
 
   }
 
- 
 
 }
