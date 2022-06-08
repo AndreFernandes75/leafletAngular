@@ -123,7 +123,7 @@ export class MapService {
     icon: this.markerIcon,
   };
 
-  private lineArea: any;
+
   public drawOptions: any;
   public coordinates: any;
 
@@ -156,33 +156,26 @@ export class MapService {
         const point = this.map.latLngToContainerPoint(coords);
         this.pointMarker = L.marker([coords.lat, coords.lng], {
           icon: this.markerIcon,
-          
+
         }).addTo(this.map);
-        console.log(this.pointMarker)
+
       }
     });
   }
 
 
-  
+
 
   observeDrawingLayer(
     layer: L.Polygon | L.Polyline | L.Marker,
     type: string
   ) {
-   
-
-    //const wkt = toWkt(layer);
-    //if (wkt) this.drawingLayer$.next({ wkt, layer, type });
   }
 
 
 
-  //FUNCTION THAT DETECTS WHICH BUTTON AS CLICK AND EXECUTE A DETERMINATE TASK ACCORDING THE OPTION CHOOSEN
+  //FUNCTION THAT DETECTS WHICH BUTTON WAS CLICK AND EXECUTE A DETERMINATE TASK ACCORDING THE OPTION CHOOSEN
   handleClickDrawOption(action: any, event: any): L.Marker | L.Circle | L.Polygon | undefined {
-
-    //let marker = L.marker([e.latlng.lat,e.latlng.lng]).addTo(this.map);
-
 
 
     switch (action) {
@@ -216,37 +209,48 @@ export class MapService {
     this.map.addEventListener(DRAWING_COMMIT, (event) => {
       const layer: L.Polygon = event.layer;
       //layer.disableEdit();;
-      
+
       this.polygonArea = layer;
       this.observeDrawingLayer(layer, event.type);
-      
      
+
     });
     this.map.editTools.startPolygon(undefined, lineOptions);
-   
+
+
 
   }
 
-  
+
 
   pinMarker(markerOptions: L.MarkerOptions) {
-    
+
     this.map?.addEventListener(DRAWING_COMMIT, (event) => {
+
       const layer = event.layer;
       // layer.disableEdit();
       this.markerArea = layer;
       this.observeDrawingLayer(layer, event.type);
       this.coordinates = layer._latlng
-     
+
+      if (this.markerArea != undefined) {
+        this.markerArea.on('dragend', function (e) {
+          let coord = layer._latlng;
+          document.getElementById("coor")!.innerHTML = coord
+        });
+      }
+
+
+
     });
     this.map?.editTools.startMarker(undefined, markerOptions);
-   
-    
-    
+
+
+
   }
 
 
-  
+
 
   drawCircle(lineOptions: L.CircleMarkerOptions): void {
 
@@ -255,14 +259,23 @@ export class MapService {
       //layer.disableEdit();;
       this.polygonArea = layer;
       this.observeDrawingLayer(layer, event.type);
-      //clear getBounds() because gets error on click again on marker
-      //this.coordinates = layer.getBounds().getCenter();
+
+
+      
 
     });
     this.map.editTools.startCircle(undefined, lineOptions);
-    
+
+
+    /*if (this.markerArea != undefined) {
+        this.markerArea.on('dragend', function (e) {
+          let coord = layer._latlng;
+          document.getElementById("coor")!.innerHTML = coord
+        });
+      }*/
 
   }
+
 
 
 
