@@ -22,6 +22,9 @@ const DRAWING_COMMIT = 'editable:drawing:commit';
 
 export class MapService {
 
+  private map!: L.Map;
+  
+
   namesOfBaseMaps = {
     'Google Maps': L.tileLayer(
       'https://mt.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
@@ -94,9 +97,10 @@ export class MapService {
 
 
   private polygonArea?: L.Polygon;
+  private circleArea?: L.Circle;
 
   title = 'leafletAngular';
-  private map!: L.Map;
+ 
   private markerArea?: L.Marker;
 
   private markerIcon = L.icon({
@@ -146,6 +150,7 @@ export class MapService {
     });
     this.map.setView(center, initialZoom);
     L.control.layers(this.namesOfBaseMaps).addTo(this.map);
+    this.namesOfBaseMaps['Google Maps'].addTo(this.map);
     this.map.on('click', (event: any) => {
       if (this.getPoint) {
         if (this.pointMarker !== undefined) {
@@ -163,7 +168,7 @@ export class MapService {
     });
   }
 
-
+ 
 
 
   observeDrawingLayer(
@@ -212,19 +217,26 @@ export class MapService {
 
       this.polygonArea = layer;
       this.observeDrawingLayer(layer, event.type);
-     
+    
+
+      
+
+      this.polygonArea.on('editable:vertex:dragend', function (e) {
+        let coord = layer.getBounds().getCenter();
+        document.getElementById("coor")!.innerHTML = coord.toString()
+        
+      });
+
 
     });
     this.map.editTools.startPolygon(undefined, lineOptions);
-
-
 
   }
 
 
 
   pinMarker(markerOptions: L.MarkerOptions) {
-
+   
     this.map?.addEventListener(DRAWING_COMMIT, (event) => {
 
       const layer = event.layer;
@@ -253,15 +265,20 @@ export class MapService {
 
 
   drawCircle(lineOptions: L.CircleMarkerOptions): void {
-
+    
     this.map.addEventListener(DRAWING_COMMIT, (event) => {
       const layer: L.Polygon = event.layer;
-      //layer.disableEdit();;
+      //layer.disableEdit();
       this.polygonArea = layer;
       this.observeDrawingLayer(layer, event.type);
 
+   
 
-      
+      this.polygonArea.on('editable:vertex:dragend', function (e) {
+        let coord = layer.getBounds().getCenter();
+        document.getElementById("coor")!.innerHTML = coord.toString()
+        
+      });
 
     });
     this.map.editTools.startCircle(undefined, lineOptions);
