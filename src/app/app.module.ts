@@ -5,13 +5,14 @@ import { MainPageComponent } from 'features/map-draw/pages/main-page/main-page.c
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { MapDrawComponent } from 'shared/components/map-draw/map-draw.component';
+import { ListService } from '@core';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     MapDrawComponent,
-    MainPageComponent
+    MainPageComponent,
   ],
   imports: [
     BrowserModule,

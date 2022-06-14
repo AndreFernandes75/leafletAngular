@@ -1,5 +1,6 @@
-#map{
-    display: block;
-    margin: auto;
-}
+#map {
 
+    display: block;
+    margin-block-start: auto;
+
+}

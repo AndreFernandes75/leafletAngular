@@ -1,48 +1,63 @@
-<!--HEADER-->
-<div class="bg-gradient-to-b from-blue-500 to-blue-600 grid grid-cols-3 border-b-4 border-white p-2 items-center">
-    <!--LOGO-->
-    <img src="/assets/deimos.svg" class="h-24 w-24 ">
-    <!--TITLE-->
-    <p class="text-white text-center text-3xl font-bold">Customize your map</p>
-</div>
-<!--MAP-->
-<app-map-draw  id="map"></app-map-draw>
-<!--FOOTER TITLES-->
-<div class="grid justify-items-center p-2">
-    <p class="font-bold">Coordinates: </p>
-    <p id="coor">&nbsp; {{this.mapService.coordinates}} </p>
-</div>
-<div class="bg-gradient-to-b from-blue-500 to-blue-600 border-t-4 border-white p-2 grid justify-items-center">
-    <p class="text-white text-2xl ">Choose your points</p>
-</div>
-<!--FOOTER BACKGROUND-->
-<div class="bg-blue-400 grid justify-items-center">
-    <!--FOOTER GRID OF ICONS AND BUTTONS-->
-    <div class="grid grid-cols-3 p-2 w-6/12 justify-items-center ">
-        <!--MARKER ICON-->
-        <img src="/assets/marker2.svg" class="h-8 w-8">
-        <!--CIRCLE ICON-->
-        <img src="/assets/circle.svg" class="h-8 w-8">
-        <!--POLYGON ICON-->
-        <img src="/assets/polygon.svg" class="h-8 w-8 ">
-        <!--BUTTON MARKER-->
-        <button (click)="this.mapService.pinMarker(this.mapService.markerOptions)">
-            <p class="text-white hover:text-black bg-gradient-to-b from-blue-500 to-blue-600 p-2 rounded mt-2">Draw a
-                marker
-                point
-            </p>
-        </button>
-        <!--BUTTON CIRCLE-->
-        <button (click)="this.mapService.drawCircle(this.mapService.lineOptions)">
-            <p class="text-white hover:text-black bg-gradient-to-b from-blue-500 to-blue-600 p-2 rounded mt-2">Draw a
-                circle
-            </p>
-        </button>
-        <!--BUTTON POLYGON-->
-        <button (click)="this.mapService.drawPolygon(this.mapService.lineOptions)">
-            <p class="text-white hover:text-black bg-gradient-to-b from-blue-500 to-blue-600 p-2 rounded mt-2">Draw a
-                polygon
-            </p>
-        </button>
+<div class="bg-white">
+    <!--HEADER-->
+    <div class="bg-gradient-to-b from-blue-500 to-blue-600 grid grid-cols-3 p-2 items-center">
+        <!--LOGO-->
+        <img src="/assets/deimos.svg" class="h-24 w-24 ">
+        <!--TITLE-->
+        <p class="text-white text-center text-3xl font-bold">Discover the available services</p>
+    </div>
+    <!--MAP-->
+    <div>
+        <div class="grid grid-cols-12 bg-blue-500 rounded ">
+            <div class="bg-white col-span-3 p-2 border-blue-500 border-r-4 border-b-4">
+                <p class="text-blue-600 text-center text-3xl font-bold">Services</p>
+            </div>
+            <div class=" col-span-9 border-blue-500 border-b-4">
+                <app-map-draw id="map"></app-map-draw>
+            </div>
+
+        </div>
+    </div>
+    <!--FOOTER TITLES-->
+    <div class="grid justify-items-center p-2">
+        <p class="font-bold">Coordinates: </p>
+        <p id="coor">&nbsp; {{this.mapService.coordinates}} </p>
+    </div>
+    <div class="bg-gradient-to-b from-blue-500 to-blue-600 p-2 grid justify-items-center">
+        <p class="text-white text-2xl ">Choose your points</p>
+    </div>
+    <!--FOOTER BACKGROUND-->
+    <div class="bg-blue-400 grid justify-items-center">
+        <!--FOOTER GRID OF ICONS AND BUTTONS-->
+        <div class="grid grid-cols-3 p-2 w-6/12 justify-items-center ">
+            <!--MARKER ICON-->
+            <img src="/assets/marker2.svg" class="h-8 w-8">
+            <!--CIRCLE ICON-->
+            <img src="/assets/circle.svg" class="h-8 w-8">
+            <!--POLYGON ICON-->
+            <img src="/assets/polygon.svg" class="h-8 w-8 ">
+            <!--BUTTON MARKER-->
+            <button (click)="this.mapService.pinMarker(this.mapService.markerOptions)">
+                <p class="text-white hover:text-black bg-gradient-to-b from-blue-500 to-blue-600 p-2 rounded mt-2">Draw
+                    a
+                    marker
+                    point
+                </p>
+            </button>
+            <!--BUTTON CIRCLE-->
+            <button (click)="this.mapService.drawCircle(this.mapService.lineOptions)">
+                <p class="text-white hover:text-black bg-gradient-to-b from-blue-500 to-blue-600 p-2 rounded mt-2">Draw
+                    a
+                    circle
+                </p>
+            </button>
+            <!--BUTTON POLYGON-->
+            <button (click)="this.mapService.drawPolygon(this.mapService.lineOptions)">
+                <p class="text-white hover:text-black bg-gradient-to-b from-blue-500 to-blue-600 p-2 rounded mt-2">Draw
+                    a
+                    polygon
+                </p>
+            </button>
+        </div>
     </div>
 </div>

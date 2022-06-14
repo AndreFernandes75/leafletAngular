@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MapService } from './services';
-
+import { ListService } from './services';
 
 
 
@@ -15,7 +15,9 @@ import { MapService } from './services';
     
   ],
   providers:[
-    MapService
+    MapService,
+    ListService
+   
   ]
   
 })
