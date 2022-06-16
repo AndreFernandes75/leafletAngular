@@ -1,5 +1,8 @@
-import { Component } from '@angular/core';
-import { MapService } from '@core';
+import { nullSafeIsEquivalent } from '@angular/compiler/src/output/output_ast';
+import { Component, OnInit } from '@angular/core';
+import { MapService,ListService } from '@core';
+
+
 
 
 @Component({
@@ -9,8 +12,15 @@ import { MapService } from '@core';
 })
 export class MainPageComponent {
   
+  servicesData = null;
 
-  constructor(public mapService:MapService ) { }
+  constructor(public mapService:MapService,public api:ListService) {}
+
+  // ngOnInit(): void {
+    
+  //   this.api.getServices().subscribe((data)=>{this.servicesData = data;});
+  // }
+
 
   
 
