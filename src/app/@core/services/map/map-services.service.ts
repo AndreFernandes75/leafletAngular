@@ -22,6 +22,7 @@ const DRAWING_COMMIT = 'editable:drawing:commit';
 })
 
 export class MapService {
+  
 
   namesOfBaseMaps = {
     'Google Maps': L.tileLayer(
@@ -98,6 +99,7 @@ export class MapService {
   public getPoint: boolean = false;
   public scale?: number;
   private populatedLayer?: L.GeoJSON;
+
  
   public removePointMarker() {
     if (this.pointMarker !== undefined) {
@@ -160,6 +162,7 @@ export class MapService {
 
       }
     });
+    
   }
 
   //FUNCTION THAT OBSERVE THE LAYER AND THE EVENT.TYPE  
@@ -167,6 +170,7 @@ export class MapService {
     layer: L.Polygon | L.Polyline | L.Marker,
     type: string
   ) {
+
   }
 
   //FUNCTION THAT CLEAR EVERY DRAWS
@@ -309,23 +313,18 @@ export class MapService {
     );
     this.populatedLayer?.addData(geoJSON);
     this.populatedLayer?.getLayers().map((layer) => {
+      switch (geoJSON.type) {
+        case 'MultiPolygon':
+          this.polygonArea = layer as L.Polygon;
+          break;
+      }
     });
     }
     }
 
+    
+
   
- 
-
-
- 
-
-
-
-
-
-
-
-
 
 
 }

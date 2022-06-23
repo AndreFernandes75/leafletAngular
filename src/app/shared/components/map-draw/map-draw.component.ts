@@ -6,7 +6,7 @@ import { MapService } from '@core';
   selector: 'app-map-draw',
   templateUrl: './map-draw.component.html',
   styleUrls: ['./map-draw.component.css'],
-  styles:[':host {margin-top: 300px;}']
+
 
 })
 export class MapDrawComponent implements OnInit{
