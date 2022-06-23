@@ -18,12 +18,15 @@
     "@angular/platform-browser": "~13.3.0",
     "@angular/platform-browser-dynamic": "~13.3.0",
     "@angular/router": "~13.3.0",
+    "@turf/helpers": "^6.5.0",
+    "@turf/turf": "^6.5.0",
     "@types/leaflet-editable": "^1.2.1",
     "leaflet": "^1.7.1",
     "leaflet-editable": "^1.2.0",
     "leaflet-geotiff-2": "^1.1.0",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
+    "wkt-parser-helper": "^4.0.1",
     "zone.js": "~0.11.4"
   },
   "devDependencies": {

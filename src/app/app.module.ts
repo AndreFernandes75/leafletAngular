@@ -10,11 +10,14 @@ import { HttpClientModule } from '@angular/common/http';
 
 
 
+
+
 @NgModule({
   declarations: [
     AppComponent,
     MapDrawComponent,
     MainPageComponent,
+    
   ],
   imports: [
     BrowserModule,

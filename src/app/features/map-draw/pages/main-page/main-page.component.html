@@ -9,13 +9,12 @@
     <!--MAP-->
     <div>
         <div class="grid grid-cols-12 bg-blue-500 rounded">
-            <table
-                class="bg-orange-500 col-span-3 border-blue-500 border-b-4">
-                <tr *ngFor="let item of results.services" class="place-items-center">
-                    <button class="p-2 w-full">
-                        <p class="text-white text-lg font-bold self-center hover:text-black">
-                            {{item.title}}</p>
-                    </button>
+            <table class="bg-orange-500  col-span-3 border-blue-500 border-b-4">
+                <tr *ngFor="let item of results.services">
+                    <!--(onclick)="this.mapService.drawPolygon(item.serviceFootprint)"-->
+                    <p class="text-white text-lg font-bold hover:text-black p-2"
+                        (click)="this.mapService.populateMap(this.mapService.toJson(item.serviceFootprint),'blue',true)">
+                        {{item.title}}</p>
                 </tr>
             </table>
             <div class=" col-span-9 border-blue-500 border-b-4">

@@ -4,12 +4,20 @@ import { MapDrawComponent } from './components/map-draw/map-draw/map-draw.compon
 
 
 
+
+
+
+
 @NgModule({
   declarations: [
    
+    
   ],
   imports: [
     CommonModule
+  ],
+  providers:[
+   HelpersComponent
   ]
 })
 export class SharedModule { }

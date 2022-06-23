@@ -15,7 +15,7 @@ type Service = {
   sampleURI: Array<string>
   serviceFootprint: string
   serviceGroups: null
-  serviceINput: {}
+  serviceInput: {}
   servicePeriod: {}
   serviceProvider: {}
   serviceSubtype: string
@@ -32,6 +32,7 @@ type Results = {
 
 
 
+
 @Component({
   selector: 'app-main-page',
   templateUrl: './main-page.component.html',
@@ -39,12 +40,20 @@ type Results = {
 })
 export class MainPageComponent implements OnInit {
 
-  servicesData: Array<Service> = [];
-  results!: Results ;
+  results!: Results;
+
+
 
   constructor(public mapService: MapService, public api: ListService) { }
 
   ngOnInit(): void {
     this.api.getServices().subscribe(data => this.results = data)
+  
   }
+
+
+
+
+
+
 }

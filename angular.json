@@ -29,7 +29,17 @@
             "styles": [
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [],
+            "allowedCommonJsDependencies": [
+              "wkt-parser-helper",
+              "geojson-equality",
+              "density-clustering",
+              "skmeans",
+              "rbush",
+              "concaveman",
+              "geojson-rbush",
+              "deep-equal"
+            ]
           },
           "configurations": {
             "production": {

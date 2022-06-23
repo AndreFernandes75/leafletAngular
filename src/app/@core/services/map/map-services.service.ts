@@ -1,10 +1,11 @@
 import { Component, Injectable } from '@angular/core';
-
+import * as turf from '@turf/turf'
 
 import * as L from 'leaflet';
 import 'leaflet-editable';
 import 'leaflet';
 import { on } from 'events';
+import { parseFromWK } from 'wkt-parser-helper'
 
 
 export { ZERO_OPACITY, HALF_OPACITY, DRAWING_COMMIT };
@@ -96,7 +97,8 @@ export class MapService {
   public pointMarker: any;
   public getPoint: boolean = false;
   public scale?: number;
-
+  private populatedLayer?: L.GeoJSON;
+ 
   public removePointMarker() {
     if (this.pointMarker !== undefined) {
       this.map.removeLayer(this.pointMarker);
@@ -283,11 +285,42 @@ export class MapService {
     });
     //LINE THAT STARTS THE FUNCTION TO DRAW A CIRCLE
     this.map.editTools.startCircle(undefined, lineOptions);
-
-
-
-
   }
+
+
+  toJson(item: string){
+    const geojson = parseFromWK(item);
+    return geojson
+  }
+
+  public async populateMap(
+    geoJSON: GeoJSON.GeoJSON,
+    color?: string,
+    clear: boolean = true
+    ) {
+    clear ? this.clearMap() : null;
+    let lineOptions: L.PolylineOptions = {
+    color: color ? color : '#ff0000',
+    lineJoin: 'round',
+    };
+    if (geoJSON && this.map) {
+    this.populatedLayer = L.geoJSON(undefined, lineOptions).addTo(
+    this.map as L.Map
+    );
+    this.populatedLayer?.addData(geoJSON);
+    this.populatedLayer?.getLayers().map((layer) => {
+    });
+    }
+    }
+
+  
+ 
+
+
+ 
+
+
+
 
 
 
