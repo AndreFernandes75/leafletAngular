@@ -97,7 +97,6 @@ export class MapService {
   private markerArea?: L.Marker;
   public pointMarker: any;
   public getPoint: boolean = false;
-  public scale?: number;
   private populatedLayer?: L.GeoJSON;
   
 
@@ -165,7 +164,7 @@ export class MapService {
       }
       
     });
-   //this.setScale()
+
   }
 
   //FUNCTION THAT OBSERVE THE LAYER AND THE EVENT.TYPE  
@@ -297,7 +296,6 @@ export class MapService {
 
   toJson(item: string) {
     const geojson = parseFromWK(item);
-    console.log(geojson)
     return geojson
   }
 
@@ -331,38 +329,11 @@ export class MapService {
       });
     }
 
-    //LatLng [0,0]
+    
   }
 
-  /*
-  private setScale() {
-    const getScale = () => {
-      const screenDpi = 96;
-      const inchPerDecimalDegree = 4374754;
-      const bounds = this.map.getBounds();
-      const width = bounds.getEast() - bounds.getWest();
 
-      const screenWidth = this.map.getSize().x;
-
-      return (width * inchPerDecimalDegree * screenDpi) / screenWidth;
-    };
-
-    this.map?.on('move', () => {
-      this.scale = getScale();
-    });
-
-    this.scale = getScale();
-  }
   
-*/
-  
-  
-
- 
-
-
-
-
 
 
 }
