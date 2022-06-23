@@ -22,7 +22,7 @@ const DRAWING_COMMIT = 'editable:drawing:commit';
 })
 
 export class MapService {
-  
+
 
   namesOfBaseMaps = {
     'Google Maps': L.tileLayer(
@@ -99,8 +99,9 @@ export class MapService {
   public getPoint: boolean = false;
   public scale?: number;
   private populatedLayer?: L.GeoJSON;
+  
 
- 
+
   public removePointMarker() {
     if (this.pointMarker !== undefined) {
       this.map.removeLayer(this.pointMarker);
@@ -136,6 +137,7 @@ export class MapService {
     const southWest = L.latLng(-89.98155760646617, -180),
       northEast = L.latLng(89.99346179538875, 180);
     const bounds = L.latLngBounds(southWest, northEast);
+    
     this.map = L.map(divId, {
       editable: true,
       maxBounds: bounds,
@@ -161,8 +163,9 @@ export class MapService {
         }).addTo(this.map);
 
       }
+      
     });
-    
+   //this.setScale()
   }
 
   //FUNCTION THAT OBSERVE THE LAYER AND THE EVENT.TYPE  
@@ -292,8 +295,9 @@ export class MapService {
   }
 
 
-  toJson(item: string){
+  toJson(item: string) {
     const geojson = parseFromWK(item);
+    console.log(geojson)
     return geojson
   }
 
@@ -301,30 +305,64 @@ export class MapService {
     geoJSON: GeoJSON.GeoJSON,
     color?: string,
     clear: boolean = true
-    ) {
+  ) {
     clear ? this.clearMap() : null;
     let lineOptions: L.PolylineOptions = {
-    color: color ? color : '#ff0000',
-    lineJoin: 'round',
+      color: color ? color : '#ff0000',
+      lineJoin: 'round',
     };
     if (geoJSON && this.map) {
-    this.populatedLayer = L.geoJSON(undefined, lineOptions).addTo(
-    this.map as L.Map
-    );
-    this.populatedLayer?.addData(geoJSON);
-    this.populatedLayer?.getLayers().map((layer) => {
-      switch (geoJSON.type) {
-        case 'MultiPolygon':
-          this.polygonArea = layer as L.Polygon;
-          break;
-      }
+      this.populatedLayer = L.geoJSON(undefined, lineOptions).addTo(
+        this.map as L.Map
+      );
+      this.populatedLayer?.addData(geoJSON);
+      this.populatedLayer?.getLayers().map((layer) => {
+        switch (geoJSON.type) {
+          case 'MultiPolygon':
+            this.polygonArea = layer as L.Polygon;
+      
+              if(this.polygonArea.getCenter().lat == 0){
+               this.map.setView([0,0],2)
+             }else{
+              this.map.setView(this.polygonArea.getCenter(),6)
+             }
+            break;
+        }
+      });
+    }
+
+    //LatLng [0,0]
+  }
+
+  /*
+  private setScale() {
+    const getScale = () => {
+      const screenDpi = 96;
+      const inchPerDecimalDegree = 4374754;
+      const bounds = this.map.getBounds();
+      const width = bounds.getEast() - bounds.getWest();
+
+      const screenWidth = this.map.getSize().x;
+
+      return (width * inchPerDecimalDegree * screenDpi) / screenWidth;
+    };
+
+    this.map?.on('move', () => {
+      this.scale = getScale();
     });
-    }
-    }
 
-    
-
+    this.scale = getScale();
+  }
   
+*/
+  
+  
+
+ 
+
+
+
+
 
 
 }
