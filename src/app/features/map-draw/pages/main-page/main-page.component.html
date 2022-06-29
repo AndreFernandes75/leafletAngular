@@ -9,12 +9,13 @@
     <!--MAP-->
     <div class="grid grid-cols-12 bg-blue-500 ">
         <div class="bg-white col-span-3  max-h-screen overflow-y-scroll">
-            <div *ngFor="let item of results.services" class="border-4 p-2 " (click)="this.mapService.populateMap(this.mapService.toJson(item.serviceFootprint),'blue',true)">
+            <div *ngFor="let item of results?.services" class="border-4 p-2 "
+                (click)="this.mapService.populateMap(this.mapService.toJson(item.serviceFootprint),'blue',true)">
                 <!--(onclick)="this.mapService.drawPolygon(item.serviceFootprint)"-->
                 <p class="text-blue-500 text-lg font-bold hover:text-black p-2">
                     {{item.title}}</p>
                 <p class="text-black p-2">{{item.description | slice:0:201}}</p>
-                
+
             </div>
 
         </div>
@@ -29,18 +30,20 @@
         <p id="coor">&nbsp; {{this.mapService.coordinates}} </p>
     </div>
     <div class="bg-gradient-to-b from-blue-500 to-blue-600 p-2 grid justify-items-center">
-        <p class="text-white text-2xl ">Choose your points</p>
+        <p class="text-white text-2xl ">Choose how to draw</p>
     </div>
     <!--FOOTER BACKGROUND-->
     <div class="bg-blue-400 grid justify-items-center">
         <!--FOOTER GRID OF ICONS AND BUTTONS-->
-        <div class="grid grid-cols-3 p-2 w-6/12 justify-items-center ">
+        <div class="grid grid-cols-4 p-2 w-6/12 justify-items-center ">
             <!--MARKER ICON-->
             <img src="/assets/marker2.svg" class="h-8 w-8">
             <!--CIRCLE ICON-->
             <img src="/assets/circle.svg" class="h-8 w-8">
             <!--POLYGON ICON-->
             <img src="/assets/polygon.svg" class="h-8 w-8 ">
+            <!--SHAPEFILE ICON-->
+            <img src="/assets/file-upload.svg" class="h-8 w-8 ">
             <!--BUTTON MARKER-->
             <button (click)="this.mapService.pinMarker(this.mapService.markerOptions)">
                 <p class="text-white hover:text-black bg-gradient-to-b from-blue-500 to-blue-600 p-2 rounded mt-2">Draw
@@ -63,6 +66,12 @@
                     polygon
                 </p>
             </button>
+            <label
+                class="text-white hover:text-black bg-gradient-to-b from-blue-500 to-blue-600 p-2 rounded mt-2 text-center"
+                for="shapefile">Draw
+                with Shapefile
+            </label>
+            <input (click)="this.mapService.loadFile('add')" id="shapefile" type="file" class="hidden" accept=".zip,.rar,.7zip">
         </div>
     </div>
 </div>

@@ -1,11 +1,15 @@
-import { Component, Injectable } from '@angular/core';
+import { Component, Injectable, Output } from '@angular/core';
 import * as turf from '@turf/turf'
 
 import * as L from 'leaflet';
 import 'leaflet-editable';
 import 'leaflet';
 import { on } from 'events';
-import { parseFromWK } from 'wkt-parser-helper'
+import { parseFromWK } from 'wkt-parser-helper';
+import * as shpjs from 'shpjs';
+import { EventEmitter } from '@angular/core';
+import { read } from 'fs';
+
 
 
 export { ZERO_OPACITY, HALF_OPACITY, DRAWING_COMMIT };
@@ -98,7 +102,7 @@ export class MapService {
   public pointMarker: any;
   public getPoint: boolean = false;
   private populatedLayer?: L.GeoJSON;
-  
+
 
 
   public removePointMarker() {
@@ -127,6 +131,8 @@ export class MapService {
   };
 
 
+
+
   //FUNCTION THAT INITIALIZE THE MAP
   public initializeMap(
     divId: string,
@@ -136,7 +142,7 @@ export class MapService {
     const southWest = L.latLng(-89.98155760646617, -180),
       northEast = L.latLng(89.99346179538875, 180);
     const bounds = L.latLngBounds(southWest, northEast);
-    
+
     this.map = L.map(divId, {
       editable: true,
       maxBounds: bounds,
@@ -147,6 +153,7 @@ export class MapService {
     });
     this.map.setView(center, initialZoom);
     L.control.layers(this.namesOfBaseMaps).addTo(this.map);
+
     this.namesOfBaseMaps['Google Maps'].addTo(this.map);
     this.map.on('click', (event: any) => {
       if (this.getPoint) {
@@ -162,7 +169,7 @@ export class MapService {
         }).addTo(this.map);
 
       }
-      
+
     });
 
   }
@@ -318,22 +325,60 @@ export class MapService {
         switch (geoJSON.type) {
           case 'MultiPolygon':
             this.polygonArea = layer as L.Polygon;
-      
-              if(this.polygonArea.getCenter().lat == 0){
-               this.map.setView([0,0],2)
-             }else{
-              this.map.setView(this.polygonArea.getCenter(),6)
-             }
+
+            if (this.polygonArea.getCenter().lat == 0) {
+              this.map.setView([0, 0], 2)
+            } else {
+              this.map.setView(this.polygonArea.getCenter(), 6)
+            }
             break;
         }
       });
     }
 
-    
+
   }
 
 
-  
+
+  loadFile(event: any) {
+    document.getElementById('shapefile')!.onchange = function (e: Event) {
+      let file = (<HTMLInputElement>e.target).files![0];
+      console.log(file)
+      switch (file.name.slice(-3)) {
+        case 'zip':
+          console.log(".zip")
+          const reader = new FileReader();
+          const importShp = new EventEmitter();
+          const buffer = file.arrayBuffer();
+          reader.onloadend = () => {
+            importShp.emit(reader.result)
+          }
+          reader.readAsArrayBuffer(file)
+          
+
+
+          break;
+
+        default:
+          console.log(file.name.slice(-3))
+          break;
+      }
+
+
+
+    }
+
+
+
+    //  if(!input == 'zip'){
+    //   console.log('zip')
+    //  }
+
+  }
+
+
+
 
 
 }
