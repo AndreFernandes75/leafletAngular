@@ -6,9 +6,9 @@ import 'leaflet-editable';
 import 'leaflet';
 import { on } from 'events';
 import { parseFromWK } from 'wkt-parser-helper';
-import * as shpjs from 'shpjs';
+import * as shp from 'shpjs';
 import { EventEmitter } from '@angular/core';
-import { read } from 'fs';
+import { ShapefileService } from '../shapefile/shapefile.service';
 
 
 
@@ -102,6 +102,8 @@ export class MapService {
   public pointMarker: any;
   public getPoint: boolean = false;
   private populatedLayer?: L.GeoJSON;
+  private shapeLayer?: L.GeoJSON;
+  private shapeFileLayerGroup!: L.FeatureGroup;
 
 
 
@@ -116,6 +118,8 @@ export class MapService {
     {
       color: '#ff0000', lineJoin: 'round',
     };
+
+
 
   private markerIcon = L.icon({
     iconUrl: 'assets/marker.svg',
@@ -190,6 +194,10 @@ export class MapService {
     }
     if (this.markerArea) {
       this.map?.removeLayer(this.markerArea)
+    }
+    if(this.shapeFileLayerGroup){
+      this.map.removeLayer(this.shapeFileLayerGroup);
+      this.shapeFileLayerGroup.clearLayers();
     }
   }
 
@@ -320,6 +328,7 @@ export class MapService {
       this.populatedLayer = L.geoJSON(undefined, lineOptions).addTo(
         this.map as L.Map
       );
+
       this.populatedLayer?.addData(geoJSON);
       this.populatedLayer?.getLayers().map((layer) => {
         switch (geoJSON.type) {
@@ -341,44 +350,39 @@ export class MapService {
 
 
 
-  loadFile(event: any) {
-    document.getElementById('shapefile')!.onchange = function (e: Event) {
+  loadFile() {
+    document.getElementById('shapefile')!.onchange = async function (e: Event) {
       let file = (<HTMLInputElement>e.target).files![0];
       console.log(file)
       switch (file.name.slice(-3)) {
         case 'zip':
           console.log(".zip")
-          const reader = new FileReader();
-          const importShp = new EventEmitter();
-          const buffer = file.arrayBuffer();
-          reader.onloadend = () => {
-            importShp.emit(reader.result)
-          }
-          reader.readAsArrayBuffer(file)
-          
-
-
+          const buffer = await new Response(file).arrayBuffer()
+          console.log(buffer)
+          const geojson = await shp(buffer);
+          console.log("geojson:" + geojson);
+          return geojson;
           break;
 
         default:
-          console.log(file.name.slice(-3))
+          return console.log(file.name.slice(-3))
           break;
       }
 
 
 
     }
-
-
-
-    //  if(!input == 'zip'){
-    //   console.log('zip')
-    //  }
+   
+  
 
   }
 
-
-
-
+  public populateMapWithFeatureGroup(featureGroup: L.FeatureGroup) {
+    this.clearMap();
+    this.shapeFileLayerGroup = new L.FeatureGroup([featureGroup]).addTo(
+      this.map
+    );
+    this.map.fitBounds(featureGroup.getBounds())
+  }
 
 }

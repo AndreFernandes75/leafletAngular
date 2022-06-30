@@ -71,7 +71,7 @@
                 for="shapefile">Draw
                 with Shapefile
             </label>
-            <input (click)="this.mapService.loadFile('add')" id="shapefile" type="file" class="hidden" accept=".zip,.rar,.7zip">
+            <input (click)="onInput($event)" id="shapefile" type="file" class="hidden" accept=".zip,.rar,.7zip" [formControl]="form">
         </div>
     </div>
 </div>

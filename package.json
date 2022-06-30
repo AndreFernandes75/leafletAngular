@@ -21,6 +21,7 @@
     "@turf/helpers": "^6.5.0",
     "@turf/turf": "^6.5.0",
     "@types/leaflet-editable": "^1.2.1",
+    "buffer": "^6.0.3",
     "leaflet": "^1.7.1",
     "leaflet-editable": "^1.2.0",
     "leaflet-geotiff-2": "^1.1.0",
