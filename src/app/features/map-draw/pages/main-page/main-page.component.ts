@@ -73,10 +73,9 @@ export class MainPageComponent implements OnInit {
             let layer = L.geoJSON();
             
             layer.addData(aoi).on('click', (event) => {
-              const input = (<HTMLInputElement>document.getElementById('shapefile'))
-              this.form.setValue(convertFeatureToWK(event.propagatedFrom.feature));
+              this.mapService.coordinates = layer.getBounds().getCenter()
             });
-            
+
             featuresGroup.setStyle({
               color: '#052d74'
             });
@@ -84,7 +83,6 @@ export class MainPageComponent implements OnInit {
             featuresGroup.addLayer(layer);
           });
           
-          console.log(featuresGroup)
           this.mapService.populateMapWithFeatureGroup(featuresGroup)
         })
       });
