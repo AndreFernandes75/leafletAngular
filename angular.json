@@ -38,7 +38,8 @@
               "rbush",
               "concaveman",
               "geojson-rbush",
-              "deep-equal"
+              "deep-equal",
+              "shpjs"
             ]
           },
           "configurations": {

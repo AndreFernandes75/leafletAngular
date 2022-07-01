@@ -68,21 +68,29 @@ export class MainPageComponent implements OnInit {
           let featuresGroup = new L.FeatureGroup();
 
           features.map((feature, index) => {
+
             let wkt = convertFeatureToWK(feature);
             let aoi = parseFromWK(wkt) as GeoJSON.GeoJSON;
             let layer = L.geoJSON();
-            
+
+
             layer.addData(aoi).on('click', (event) => {
+
               this.mapService.coordinates = layer.getBounds().getCenter()
+              layer.setStyle({ color: '#f47d08' });
+
             });
 
             featuresGroup.setStyle({
               color: '#052d74'
             });
-            layer.setStyle({ color: '#f47d08' });
+
+
             featuresGroup.addLayer(layer);
+
+
           });
-          
+
           this.mapService.populateMapWithFeatureGroup(featuresGroup)
         })
       });
