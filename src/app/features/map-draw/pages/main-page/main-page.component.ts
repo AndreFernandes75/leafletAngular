@@ -1,12 +1,12 @@
 import { HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { MapService, ListService, ShapefileService } from '@core';
+import { MapService, ListService, ShapefileService, SearchService } from '@core';
 import { FeatureCollection } from '@turf/helpers';
 import { geoJSON } from 'leaflet';
 import * as shp from 'shpjs';
 import { convertFeatureToWK, parseFromWK } from 'wkt-parser-helper';
 import * as L from 'leaflet';
-import { FormControl } from '@angular/forms';
+
 
 
 type Service = {
@@ -32,6 +32,7 @@ type Service = {
 type Results = {
   totalResults: number
   itemsPerPage: number
+  nextPage: number
   services: Array<Service>
 }
 
@@ -44,14 +45,25 @@ type Results = {
 export class MainPageComponent implements OnInit {
 
   results!: Results;
-  form = new FormControl('');
+  p: number = 1;
 
 
-  constructor(public mapService: MapService, public api: ListService, public shapeService: ShapefileService) { }
+  constructor(public mapService: MapService, public api: ListService,
+    public shapeService: ShapefileService, public searchService: SearchService) { }
 
   ngOnInit(): void {
-    this.api.getServices().subscribe(data => this.results = data)
+    this.inputPage(this.p)
+  }
 
+  inputPage(number: number) {
+    if (number == 1) {
+      this.p = 1;
+      return this.api.getServices(this.p).subscribe(data => this.results = data);
+    } else {
+      this.p = 17;
+      return this.api.getServices(this.p).subscribe(data => this.results = data);
+    }
+    console.log(this.p)
   }
 
   onInput(event: Event) {
@@ -80,7 +92,6 @@ export class MainPageComponent implements OnInit {
 
             });
 
-
             featuresGroup.setStyle({ color: '#3073F1' });
             layer.setStyle({ color: '#f47d08' });
             featuresGroup.addLayer(layer);
@@ -91,6 +102,11 @@ export class MainPageComponent implements OnInit {
         })
       });
     }
+  }
+
+  public findService(action: any) {
+    console.log(this.mapService.coordinates)
+    console.log(action)
   }
 
 }

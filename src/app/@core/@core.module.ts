@@ -1,8 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MapService } from './services';
-import { ListService } from './services';
-import { ShapefileService } from './services';
+import { MapService,ListService,ShapefileService,SearchService } from './services';
+
 
 
 
@@ -19,7 +18,8 @@ import { ShapefileService } from './services';
   providers:[
     MapService,
     ListService,
-    ShapefileService
+    ShapefileService,
+    SearchService
    
   ]
   

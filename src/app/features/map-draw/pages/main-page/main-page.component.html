@@ -8,27 +8,41 @@
     </div>
     <!--MAP-->
     <div class="grid grid-cols-12 bg-blue-500 ">
-        <div class="bg-white col-span-3  max-h-screen overflow-y-scroll">
+        <div class="bg-white col-span-3 max-h-screen overflow-y-scroll">
+
             <div *ngFor="let item of results?.services" class="border-4 p-2 "
                 (click)="this.mapService.populateMap(this.mapService.toJson(item.serviceFootprint),'blue',true)">
+                <!--let item of result| paginate:{itemsPerPage:this.results.itemsPerPage,currentPage:this.p}-->
                 <!--(onclick)="this.mapService.drawPolygon(item.serviceFootprint)"-->
                 <p class="text-blue-500 text-lg font-bold hover:text-black p-2">
                     {{item.title}}</p>
                 <p class="text-black p-2">{{item.description | slice:0:201}}</p>
-
             </div>
 
         </div>
-        <div class=" col-span-9 border-blue-500 border-b-4">
+
+        <div class=" col-span-9 border-blue-500 border-l-4">
             <app-map-draw id="map"></app-map-draw>
         </div>
+
     </div>
 
-    <!--FOOTER TITLES-->
-    <div class="grid justify-items-center p-2">
-        <p class="font-bold">Coordinates: </p>
-        <p id="coor">&nbsp; {{this.mapService.coordinates}} </p>
+    <!--DIV OF COORDINATES AND PAGINATION NUMBERS-->
+    <div class="grid grid-cols-12 max-w-full">
+        <div class="col-span-3 p-5 text-center space-x-4">
+            <label class="font-bold">Previous</label>
+            <button (click)="this.inputPage(1)"
+                class="bg-gradient-to-b from-blue-500 to-blue-600 p-1 w-12 text-white rounded">1</button>
+            <button (click)="this.inputPage(17)"
+                class="bg-gradient-to-b from-blue-500 to-blue-600 p-1 w-12 text-white rounded">17</button>
+            <label class="font-bold">Next</label>
+        </div>
+        <div class="col-span-9 border-l-4 border-blue-500 text-center">
+            <p class="font-bold ">Coordinates: </p>
+            <p id="coor">&nbsp; {{this.mapService.coordinates}} </p>
+        </div>
     </div>
+    <!--FOOTER TITLES-->
     <div class="bg-gradient-to-b from-blue-500 to-blue-600 p-2 grid justify-items-center">
         <p class="text-white text-2xl ">Choose how to draw</p>
     </div>
@@ -66,12 +80,13 @@
                     polygon
                 </p>
             </button>
+            <!--BUTTON SHAPEFILE-->
             <label
                 class="text-white hover:text-black bg-gradient-to-b from-blue-500 to-blue-600 p-2 rounded mt-2 text-center"
                 for="shapefile">Draw
                 with Shapefile
             </label>
-            <input (click)="onInput($event)" id="shapefile" type="file" class="hidden" accept=".zip,.rar,.7zip" [formControl]="form">
+            <input (click)="onInput($event)" id="shapefile" type="file" class="hidden" accept=".zip,.rar,.7zip">
         </div>
     </div>
 </div>

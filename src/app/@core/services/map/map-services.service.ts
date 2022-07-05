@@ -1,6 +1,5 @@
 import { Component, Injectable, Output } from '@angular/core';
 import * as turf from '@turf/turf'
-
 import * as L from 'leaflet';
 import 'leaflet-editable';
 import 'leaflet';
@@ -252,6 +251,7 @@ export class MapService {
       });
 
     });
+    
     //LINE THAT STARTS THE FUNCTION TO DRAW A POLYGON
     this.map.editTools.startPolygon(undefined, lineOptions);
 
@@ -384,5 +384,8 @@ export class MapService {
     );
     this.map.fitBounds(featureGroup.getBounds())
   }
+
+
+  
 
 }
