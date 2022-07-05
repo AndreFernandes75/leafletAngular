@@ -36,8 +36,6 @@ type Results = {
 }
 
 
-
-
 @Component({
   selector: 'app-main-page',
   templateUrl: './main-page.component.html',
@@ -76,18 +74,16 @@ export class MainPageComponent implements OnInit {
 
             layer.addData(aoi).on('click', (event) => {
 
-              this.mapService.coordinates = layer.getBounds().getCenter()
+              featuresGroup.setStyle({ color: '#3073F1' });
+              this.mapService.coordinates = layer.getBounds().getCenter();
               layer.setStyle({ color: '#f47d08' });
 
             });
 
-            featuresGroup.setStyle({
-              color: '#052d74'
-            });
 
-
+            featuresGroup.setStyle({ color: '#3073F1' });
+            layer.setStyle({ color: '#f47d08' });
             featuresGroup.addLayer(layer);
-
 
           });
 
@@ -96,10 +92,5 @@ export class MainPageComponent implements OnInit {
       });
     }
   }
-
-
-
-
-
 
 }
