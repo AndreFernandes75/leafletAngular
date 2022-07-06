@@ -12,8 +12,6 @@
 
             <div *ngFor="let item of results?.services" class="border-4 p-2 "
                 (click)="this.mapService.populateMap(this.mapService.toJson(item.serviceFootprint),'blue',true)">
-                <!--let item of result| paginate:{itemsPerPage:this.results.itemsPerPage,currentPage:this.p}-->
-                <!--(onclick)="this.mapService.drawPolygon(item.serviceFootprint)"-->
                 <p class="text-blue-500 text-lg font-bold hover:text-black p-2">
                     {{item.title}}</p>
                 <p class="text-black p-2">{{item.description | slice:0:201}}</p>
@@ -34,7 +32,7 @@
             <button (click)="this.inputPage(1)"
                 class="bg-gradient-to-b from-blue-500 to-blue-600 p-1 w-12 text-white rounded">1</button>
             <button (click)="this.inputPage(17)"
-                class="bg-gradient-to-b from-blue-500 to-blue-600 p-1 w-12 text-white rounded">17</button>
+                class="bg-gradient-to-b from-blue-500 to-blue-600 p-1 w-12 text-white rounded">2</button>
             <label class="font-bold">Next</label>
         </div>
         <div class="col-span-9 border-l-4 border-blue-500 text-center">
@@ -74,7 +72,7 @@
                 </p>
             </button>
             <!--BUTTON POLYGON-->
-            <button (click)="this.mapService.drawPolygon(this.mapService.lineOptions)">
+            <button (click)="this.searchServices();this.mapService.drawPolygon(this.mapService.lineOptions)">
                 <p class="text-white hover:text-black bg-gradient-to-b from-blue-500 to-blue-600 p-2 rounded mt-2">Draw
                     a
                     polygon

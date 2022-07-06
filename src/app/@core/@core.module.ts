@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MapService,ListService,ShapefileService,SearchService } from './services';
+import { MapService,ListService,ShapefileService } from './services';
 
 
 
@@ -19,7 +19,7 @@ import { MapService,ListService,ShapefileService,SearchService } from './service
     MapService,
     ListService,
     ShapefileService,
-    SearchService
+    
    
   ]
   

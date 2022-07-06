@@ -1,8 +1,7 @@
 import { HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { MapService, ListService, ShapefileService, SearchService } from '@core';
+import { MapService, ListService, ShapefileService } from '@core';
 import { FeatureCollection } from '@turf/helpers';
-import { geoJSON } from 'leaflet';
 import * as shp from 'shpjs';
 import { convertFeatureToWK, parseFromWK } from 'wkt-parser-helper';
 import * as L from 'leaflet';
@@ -49,7 +48,7 @@ export class MainPageComponent implements OnInit {
 
 
   constructor(public mapService: MapService, public api: ListService,
-    public shapeService: ShapefileService, public searchService: SearchService) { }
+    public shapeService: ShapefileService) { }
 
   ngOnInit(): void {
     this.inputPage(this.p)
@@ -64,6 +63,10 @@ export class MainPageComponent implements OnInit {
       return this.api.getServices(this.p).subscribe(data => this.results = data);
     }
     console.log(this.p)
+  }
+
+  searchServices() {
+    return this.api.getServicesByPolygon(this.p, this.mapService.wktPolygon).subscribe(data => console.log(this.results = data))
   }
 
   onInput(event: Event) {

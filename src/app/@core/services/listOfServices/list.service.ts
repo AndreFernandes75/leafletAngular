@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
-
+import { MultiPolygon } from '@turf/helpers';
 
 
 @Injectable({
@@ -23,11 +22,13 @@ export class ListService {
     })
   }
 
-  getServices(page:number): Observable<any> {
-    return this.http.get(this.apiUrl + '?perPage=16'+'&page=' + page, { headers: this.httpOptions.headers })
+  getServices(page: number): Observable<any> {
+    return this.http.get(this.apiUrl + '?perPage=16' + '&page=' + page, { headers: this.httpOptions.headers });
   }
 
-  
+  getServicesByPolygon(page: number, multi: MultiPolygon): Observable<any> {
+    return this.http.get(this.apiUrl + '?perPage=16' + '&page=' + page + '&aoi=' + multi, { headers: this.httpOptions.headers });
+  }
 
 
 }

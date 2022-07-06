@@ -1,12 +1,11 @@
-import { Component, Injectable, Output } from '@angular/core';
+import { Component, Injectable, Output, EventEmitter } from '@angular/core';
 import * as turf from '@turf/turf'
 import * as L from 'leaflet';
 import 'leaflet-editable';
 import 'leaflet';
 import { on } from 'events';
-import { parseFromWK } from 'wkt-parser-helper';
+import { convertToWK, parseFromWK } from 'wkt-parser-helper';
 import * as shp from 'shpjs';
-import { EventEmitter } from '@angular/core';
 import { ShapefileService } from '../shapefile/shapefile.service';
 
 
@@ -103,7 +102,7 @@ export class MapService {
   private populatedLayer?: L.GeoJSON;
   private shapeLayer?: L.GeoJSON;
   private shapeFileLayerGroup!: L.FeatureGroup;
-
+  public wktPolygon: any;
 
 
   public removePointMarker() {
@@ -194,7 +193,7 @@ export class MapService {
     if (this.markerArea) {
       this.map?.removeLayer(this.markerArea)
     }
-    if(this.shapeFileLayerGroup){
+    if (this.shapeFileLayerGroup) {
       this.map.removeLayer(this.shapeFileLayerGroup);
       this.shapeFileLayerGroup.clearLayers();
     }
@@ -239,19 +238,23 @@ export class MapService {
 
     //ADD EVENT LISTENNER TO THE BUTTON AND ALLOW DRAW AND DRAG
     this.map.addEventListener(DRAWING_COMMIT, (event) => {
+
       const layer: L.Polygon = event.layer;
       this.polygonArea = layer;
       this.observeDrawingLayer(layer, event.type);
-
+      //L.POLYGON CORDINATES AND TRANSFORM TO GEOJSON AND THEN TO WKT
+      this.wktPolygon = convertToWK(layer.toGeoJSON())
+      console.log(this.wktPolygon)
       //FUNCTION THAT ALLOW TO KNOW THE COORDINATES AND UPDATE EVERY TIME WHEN IS DRAG
       this.polygonArea.on('editable:vertex:dragend', function (e) {
+
         let coord = layer.getBounds().getCenter();
         document.getElementById("coor")!.innerHTML = coord.toString()
 
       });
 
     });
-    
+
     //LINE THAT STARTS THE FUNCTION TO DRAW A POLYGON
     this.map.editTools.startPolygon(undefined, lineOptions);
 
@@ -292,9 +295,10 @@ export class MapService {
 
     //ADD EVENT LISTENNER TO THE BUTTON AND ALLOW DRAW AND DRAG
     this.map.addEventListener(DRAWING_COMMIT, (event) => {
-      const layer: L.Polygon = event.layer;
-      this.polygonArea = layer;
+      const layer: L.Polygon = event.layer
+      this.polygonArea = layer
       this.observeDrawingLayer(layer, event.type);
+
 
       //FUNCTION THAT ALLOW TO KNOW THE COORDINATES AND UPDATE EVERY TIME WHEN IS DRAG
       this.polygonArea.on('editable:vertex:dragend', function (e) {
@@ -306,12 +310,18 @@ export class MapService {
     });
     //LINE THAT STARTS THE FUNCTION TO DRAW A CIRCLE
     this.map.editTools.startCircle(undefined, lineOptions);
+
   }
 
 
   toJson(item: string) {
     const geojson = parseFromWK(item);
-    return geojson
+    return geojson;
+  }
+
+  inWkt(geojson: GeoJSON.GeoJSON) {
+    const wkt = convertToWK(geojson);
+    return wkt;
   }
 
   public async populateMap(
@@ -368,13 +378,7 @@ export class MapService {
           return console.log(file.name.slice(-3))
           break;
       }
-
-
-
     }
-   
-  
-
   }
 
   public populateMapWithFeatureGroup(featureGroup: L.FeatureGroup) {
@@ -386,6 +390,6 @@ export class MapService {
   }
 
 
-  
+
 
 }
