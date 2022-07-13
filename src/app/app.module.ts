@@ -6,6 +6,7 @@ import { AppComponent } from './app.component';
 import { MapDrawComponent } from 'shared/components/map-draw/map-draw.component';
 import { ListService } from '@core';
 import { HttpClientModule } from '@angular/common/http';
+import { ResultsComponent } from 'shared/components/results/results.component';
 
 
 
@@ -16,6 +17,7 @@ import { HttpClientModule } from '@angular/common/http';
     AppComponent,
     MapDrawComponent,
     MainPageComponent,
+    ResultsComponent
     
   ],
   imports: [
@@ -24,7 +26,7 @@ import { HttpClientModule } from '@angular/common/http';
     HttpClientModule,
   
   ],
-  providers: [],
+  providers: [ResultsComponent],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

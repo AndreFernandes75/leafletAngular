@@ -1,12 +1,15 @@
-import { Component, Injectable, Output, EventEmitter } from '@angular/core';
+import { Component, Injectable, Output, EventEmitter, ApplicationModule } from '@angular/core';
 import * as turf from '@turf/turf'
 import * as L from 'leaflet';
 import 'leaflet-editable';
-import 'leaflet';
+import 'leaflet-draw';
+
 import { on } from 'events';
 import { convertToWK, parseFromWK } from 'wkt-parser-helper';
 import * as shp from 'shpjs';
-import { ShapefileService } from '../shapefile/shapefile.service';
+import { Observable } from 'rxjs';
+import { ListService } from '../listOfServices/list.service';
+import { threadId } from 'worker_threads';
 
 
 
@@ -24,6 +27,9 @@ const DRAWING_COMMIT = 'editable:drawing:commit';
 })
 
 export class MapService {
+
+  constructor(public api: ListService) { }
+
 
 
   namesOfBaseMaps = {
@@ -90,19 +96,24 @@ export class MapService {
     ),
   };
 
-  private map!: L.Map;
+
+
+
+  public map!: L.DrawMap;
   public drawOptions: any;
   public coordinates: any;
-  private polygonArea?: L.Polygon;
-  private circleArea?: L.Circle;
+  //private polygonArea?: L.Polygon;//ELIMINAR DEPOIS
+  private circleArea?: any;
   title = 'leafletAngular';
-  private markerArea?: L.Marker;
+  private markerArea?: any;
   public pointMarker: any;
   public getPoint: boolean = false;
   private populatedLayer?: L.GeoJSON;
   private shapeLayer?: L.GeoJSON;
   private shapeFileLayerGroup!: L.FeatureGroup;
   public wktPolygon: any;
+  public observableDraw: any;
+  private polygonArea?: any;
 
 
   public removePointMarker() {
@@ -135,6 +146,12 @@ export class MapService {
 
 
 
+
+
+
+
+
+
   //FUNCTION THAT INITIALIZE THE MAP
   public initializeMap(
     divId: string,
@@ -146,7 +163,7 @@ export class MapService {
     const bounds = L.latLngBounds(southWest, northEast);
 
     this.map = L.map(divId, {
-      editable: true,
+      drawControl: true,
       maxBounds: bounds,
       attributionControl: false,
       minZoom: 3,
@@ -179,9 +196,11 @@ export class MapService {
   //FUNCTION THAT OBSERVE THE LAYER AND THE EVENT.TYPE  
   observeDrawingLayer(
     layer: L.Polygon | L.Polyline | L.Marker,
-    type: string
-  ) {
+    page: number,
 
+  ) {
+    const wkt: any = convertToWK(layer.toGeoJSON());
+    return this.api.getServicesByPolygon(page, wkt);
   }
 
   //FUNCTION THAT CLEAR EVERY DRAWS
@@ -193,6 +212,9 @@ export class MapService {
     if (this.markerArea) {
       this.map?.removeLayer(this.markerArea)
     }
+    if (this.circleArea) {
+      this.map?.removeLayer(this.circleArea)
+    }
     if (this.shapeFileLayerGroup) {
       this.map.removeLayer(this.shapeFileLayerGroup);
       this.shapeFileLayerGroup.clearLayers();
@@ -201,116 +223,64 @@ export class MapService {
 
 
 
-  //FUNCTION THAT DETECTS WHICH BUTTON WAS CLICK AND EXECUTE A DETERMINATE TASK ACCORDING THE OPTION CHOOSEN
-  //IN THE MOMENT IS NOT BEEN USED
-  handleClickDrawOption(action: any, event: any): L.Marker | L.Circle | L.Polygon | undefined {
 
 
-    switch (action) {
-      case "marker":
-        let marker: L.Marker = event.layer
-        return marker
-        break;
+  drawPolygon(lineOptions: L.PolylineOptions) {
+    this.clearMap()
+    let polygonDrawer = new L.Draw.Polygon(this.map).enable();
+    this.polygonArea = new L.FeatureGroup();
+    let editableLayers = this.polygonArea;
+    this.map.addLayer(editableLayers);
 
-      case "circle":
-        let circle: L.Circle = event.layer
-        return circle
-        break;
+    this.map.on(L.Draw.Event.CREATED, function (e) {
+      let type = e.type,
+        layer = e.layer;
+      editableLayers.addLayer(layer)
+      let coord = layer.getBounds().getCenter();
+      document.getElementById("coor")!.innerHTML = coord.toString();
 
-      case "polygon":
-        let polygon: L.Polygon = event.layer
-        return polygon
-        break;
-
-      default:
-        return
-        break;
-    }
-
+    })
 
   }
 
 
-
-  drawPolygon(lineOptions: L.PolylineOptions): void {
-    //CLEAR THE PREVIOUS DRAWS
-    this.clearMap();
-
-    //ADD EVENT LISTENNER TO THE BUTTON AND ALLOW DRAW AND DRAG
-    this.map.addEventListener(DRAWING_COMMIT, (event) => {
-
-      const layer: L.Polygon = event.layer;
-      this.polygonArea = layer;
-      this.observeDrawingLayer(layer, event.type);
-      //L.POLYGON CORDINATES AND TRANSFORM TO GEOJSON AND THEN TO WKT
-      this.wktPolygon = convertToWK(layer.toGeoJSON())
-      console.log(this.wktPolygon)
-      //FUNCTION THAT ALLOW TO KNOW THE COORDINATES AND UPDATE EVERY TIME WHEN IS DRAG
-      this.polygonArea.on('editable:vertex:dragend', function (e) {
-
-        let coord = layer.getBounds().getCenter();
-        document.getElementById("coor")!.innerHTML = coord.toString()
-
-      });
-
-    });
-
-    //LINE THAT STARTS THE FUNCTION TO DRAW A POLYGON
-    this.map.editTools.startPolygon(undefined, lineOptions);
-
-  }
 
 
 
   pinMarker(markerOptions: L.MarkerOptions) {
-    //CLEAR THE PREVIOUS DRAWS
     this.clearMap();
+    let markerDrawer = new L.Draw.Marker(this.map).enable();
+    this.markerArea = new L.FeatureGroup();
+    let editableLayers = this.markerArea;
+    this.map.addLayer(editableLayers);
+    this.map.on(L.Draw.Event.CREATED, function (e) {
+      let type = e.type,
+        layer = e.layer;
+      editableLayers.addLayer(layer)
+      let coord = layer._latlng;
+      document.getElementById("coor")!.innerHTML = coord.toString();
 
-    //ADD EVENT LISTENNER TO THE BUTTON AND ALLOW DRAW AND DRAG
-    this.map?.addEventListener(DRAWING_COMMIT, (event) => {
-      const layer = event.layer;
-      this.markerArea = layer;
-      this.observeDrawingLayer(layer, event.type);
-      this.coordinates = layer._latlng
-
-      //FUNCTION THAT ALLOW TO KNOW THE COORDINATES AND UPDATE EVERY TIME WHEN IS DRAG
-      if (this.markerArea != undefined) {
-        this.markerArea.on('dragend', function (e) {
-          let coord = layer._latlng;
-          document.getElementById("coor")!.innerHTML = coord
-        });
-      }
-
-    });
-    //LINE THAT STARTS THE FUNCTION TO DRAW A MARKER
-    this.map?.editTools.startMarker(undefined, markerOptions);
+    })
   }
 
 
 
 
-  drawCircle(lineOptions: L.CircleMarkerOptions): void {
-    //CLEAR THE PREVIOUS DRAWS
+  drawCircle(lineOptions: L.CircleMarkerOptions) {
     this.clearMap();
+    let circleDrawer = new L.Draw.Circle(this.map).enable();
+    this.circleArea = new L.FeatureGroup();
+    let editableLayers = this.circleArea;
+    this.map.addLayer(editableLayers);
+    this.map.on(L.Draw.Event.CREATED, function (e) {
+      let type = e.type,
+        layer = e.layer;
+      editableLayers.addLayer(layer);
+      let coord = layer.getBounds().getCenter();
+      document.getElementById("coor")!.innerHTML = coord.toString();
 
-    //ADD EVENT LISTENNER TO THE BUTTON AND ALLOW DRAW AND DRAG
-    this.map.addEventListener(DRAWING_COMMIT, (event) => {
-      const layer: L.Polygon = event.layer
-      this.polygonArea = layer
-      this.observeDrawingLayer(layer, event.type);
 
-
-      //FUNCTION THAT ALLOW TO KNOW THE COORDINATES AND UPDATE EVERY TIME WHEN IS DRAG
-      this.polygonArea.on('editable:vertex:dragend', function (e) {
-        let coord = layer.getBounds().getCenter();
-        document.getElementById("coor")!.innerHTML = coord.toString()
-
-      });
-
-    });
-    //LINE THAT STARTS THE FUNCTION TO DRAW A CIRCLE
-    this.map.editTools.startCircle(undefined, lineOptions);
-
+    })
   }
 
 
@@ -393,3 +363,31 @@ export class MapService {
 
 
 }
+
+
+
+
+//CÓDIGO LEAFLET EDITABLE
+// drawCircle(lineOptions: L.CircleMarkerOptions): void {
+//   //CLEAR THE PREVIOUS DRAWS
+//   this.clearMap();
+
+//   //ADD EVENT LISTENNER TO THE BUTTON AND ALLOW DRAW AND DRAG
+//   this.map.addEventListener(DRAWING_COMMIT, (event) => {
+//     const layer: L.Polygon = event.layer
+//     this.polygonArea = layer
+//     this.observeDrawingLayer(layer, 17);
+
+
+//     //FUNCTION THAT ALLOW TO KNOW THE COORDINATES AND UPDATE EVERY TIME WHEN IS DRAG
+//     this.polygonArea.on('editable:vertex:dragend', function (e) {
+//       let coord = layer.getBounds().getCenter();
+//       document.getElementById("coor")!.innerHTML = coord.toString()
+
+//     });
+
+//   });
+//   //LINE THAT STARTS THE FUNCTION TO DRAW A CIRCLE
+//   this.map.editTools.startCircle(undefined, lineOptions);
+
+// }

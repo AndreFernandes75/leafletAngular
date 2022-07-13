@@ -1,7 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { coreModule } from '@core/@core.module';
-import { MapService } from '@core';
+import { MainPageComponent } from './pages/main-page/main-page.component';
+
 
 
 
@@ -17,6 +18,7 @@ import { MapService } from '@core';
   imports: [
     CommonModule,
     coreModule,
+    
    
   ],
   
