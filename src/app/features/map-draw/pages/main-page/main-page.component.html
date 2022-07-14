@@ -10,11 +10,11 @@
     <div class="grid grid-cols-12 bg-blue-500 ">
         <div class="bg-white col-span-3 max-h-[66.4vh] overflow-y-scroll">
 
-            <div *ngFor="let item of this.results.results?.services" class="border-4 p-2 "
+            <div *ngFor="let item of this.results.results?.services" class="border-4 p-2 hover:bg-gray-200"
                 (click)="this.mapService.populateMap(this.mapService.toJson(item.serviceFootprint),'blue',true)">
-                <p class="text-blue-500 text-lg font-bold hover:text-black p-2">
+                <p class="text-blue-500 text-lg font-bold">
                     {{item.title}}</p>
-                <p class="text-black p-2">{{item.description | slice:0:201}}</p>
+                <p class="text-black p-2">{{item.description | slice:0:201}}...</p>
             </div>
 
         </div>
@@ -83,9 +83,9 @@
                 class="text-white hover:text-black bg-gradient-to-b from-blue-500 to-blue-600 p-2 rounded mt-2 text-center"
                 for="shapefile">Draw
                 with Shapefile
-           
-            <input (click)="onInput($event)" id="shapefile" type="file" class="hidden" accept=".zip,.rar,.7zip">
-        </label>
+
+                <input (click)="onInput($event)" id="shapefile" type="file" class="hidden" accept=".zip,.rar,.7zip">
+            </label>
         </div>
     </div>
 </div>
