@@ -1,25 +1,24 @@
 import { Component, Injectable, Output, EventEmitter, ApplicationModule } from '@angular/core';
 import * as turf from '@turf/turf'
 import * as L from 'leaflet';
-import 'leaflet-editable';
 import 'leaflet-draw';
-
+// import 'leaflet-editable';
 import { on } from 'events';
 import { convertToWK, parseFromWK } from 'wkt-parser-helper';
 import * as shp from 'shpjs';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { ListService } from '../listOfServices/list.service';
 import { threadId } from 'worker_threads';
 
 
 
-export { ZERO_OPACITY, HALF_OPACITY, DRAWING_COMMIT };
+export { ZERO_OPACITY, HALF_OPACITY };
 
 
 
 const ZERO_OPACITY = 0;
 const HALF_OPACITY = 0.5;
-const DRAWING_COMMIT = 'editable:drawing:commit';
+
 
 
 @Injectable({
@@ -116,6 +115,8 @@ export class MapService {
   private polygonArea?: any;
 
 
+
+
   public removePointMarker() {
     if (this.pointMarker !== undefined) {
       this.map.removeLayer(this.pointMarker);
@@ -151,7 +152,6 @@ export class MapService {
 
 
 
-
   //FUNCTION THAT INITIALIZE THE MAP
   public initializeMap(
     divId: string,
@@ -163,33 +163,39 @@ export class MapService {
     const bounds = L.latLngBounds(southWest, northEast);
 
     this.map = L.map(divId, {
-      drawControl: true,
       maxBounds: bounds,
       attributionControl: false,
       minZoom: 3,
       zoomControl: false,
       maxBoundsViscosity: 1.0,
     });
-    this.map.setView(center, initialZoom);
-    L.control.layers(this.namesOfBaseMaps).addTo(this.map);
-
-    this.namesOfBaseMaps['Google Maps'].addTo(this.map);
-    this.map.on('click', (event: any) => {
-      if (this.getPoint) {
-        if (this.pointMarker !== undefined) {
-          this.removePointMarker();
-        }
-        this.getPoint = false;
-        const coords = L.latLng(event.latlng.lat, event.latlng.lng);
-        const point = this.map.latLngToContainerPoint(coords);
-        this.pointMarker = L.marker([coords.lat, coords.lng], {
-          icon: this.markerIcon,
-
-        }).addTo(this.map);
+    var drawnItems = new L.FeatureGroup();
+    this.map.addLayer(drawnItems);
+    var drawControl = new L.Control.Draw({
+      draw: {
+        polygon: false,
+        marker: false,
+        polyline: false,
+        rectangle: false,
+        circle: false,
+        circlemarker: false,
+      },
+      edit: {
+        edit: false,
+        remove: false,
+        featureGroup: drawnItems,
 
       }
 
     });
+
+
+
+    this.map.addControl(drawControl);
+    this.map.setView(center, initialZoom);
+    L.control.layers(this.namesOfBaseMaps).addTo(this.map);
+    this.namesOfBaseMaps['Google Maps'].addTo(this.map);
+
 
   }
 
@@ -208,12 +214,15 @@ export class MapService {
 
     if (this.polygonArea) {
       this.map?.removeLayer(this.polygonArea);
+      document.getElementById("coor")!.innerHTML = ""
     }
     if (this.markerArea) {
       this.map?.removeLayer(this.markerArea)
+      document.getElementById("coor")!.innerHTML = ""
     }
     if (this.circleArea) {
       this.map?.removeLayer(this.circleArea)
+      document.getElementById("coor")!.innerHTML = ""
     }
     if (this.shapeFileLayerGroup) {
       this.map.removeLayer(this.shapeFileLayerGroup);
@@ -225,62 +234,92 @@ export class MapService {
 
 
 
+
+  // public editTool = new L.EditToolbar.Edit(this.map, {
+  //   featureGroup: drawControl.options.featureGroup,
+  //   selectedPathOptions: drawControl.options.edit.selectedPathOptions
+  // })
+
+
+
+
   drawPolygon(lineOptions: L.PolylineOptions) {
     this.clearMap()
+    let map = this.map;
     let polygonDrawer = new L.Draw.Polygon(this.map).enable();
     this.polygonArea = new L.FeatureGroup();
     let editableLayers = this.polygonArea;
     this.map.addLayer(editableLayers);
 
+
     this.map.on(L.Draw.Event.CREATED, function (e) {
-      let type = e.type,
+      let type = (e as L.DrawEvents.Created).layerType,
         layer = e.layer;
       editableLayers.addLayer(layer)
-      let coord = layer.getBounds().getCenter();
-      document.getElementById("coor")!.innerHTML = coord.toString();
 
+      if (type == "polygon") {
+        let coord = layer.getBounds().getCenter();
+        document.getElementById("coor")!.innerHTML = coord.toString();
+        layer.editing.enable()
+      }
     })
+
+
 
   }
 
 
 
-
-
   pinMarker(markerOptions: L.MarkerOptions) {
+
     this.clearMap();
     let markerDrawer = new L.Draw.Marker(this.map).enable();
     this.markerArea = new L.FeatureGroup();
     let editableLayers = this.markerArea;
     this.map.addLayer(editableLayers);
     this.map.on(L.Draw.Event.CREATED, function (e) {
-      let type = e.type,
+      let type = (e as L.DrawEvents.Created).layerType,
         layer = e.layer;
-      editableLayers.addLayer(layer)
-      let coord = layer._latlng;
-      document.getElementById("coor")!.innerHTML = coord.toString();
+      editableLayers.addLayer(layer).dra;
+
+      if (type == "marker") {
+        let coord = layer._latlng;
+        document.getElementById("coor")!.innerHTML = coord.toString();
+        layer.editing.enable();
+      }
 
     })
+
+
+
   }
 
 
 
 
   drawCircle(lineOptions: L.CircleMarkerOptions) {
+
     this.clearMap();
     let circleDrawer = new L.Draw.Circle(this.map).enable();
     this.circleArea = new L.FeatureGroup();
     let editableLayers = this.circleArea;
     this.map.addLayer(editableLayers);
     this.map.on(L.Draw.Event.CREATED, function (e) {
-      let type = e.type,
+      let type = (e as L.DrawEvents.Created).layerType,
         layer = e.layer;
       editableLayers.addLayer(layer);
-      let coord = layer.getBounds().getCenter();
-      document.getElementById("coor")!.innerHTML = coord.toString();
 
+      if (type == "circle") {
+        let coord = layer._latlng;
+        document.getElementById("coor")!.innerHTML = coord.toString();
+
+      }
 
     })
+
+
+
+
   }
 
 
