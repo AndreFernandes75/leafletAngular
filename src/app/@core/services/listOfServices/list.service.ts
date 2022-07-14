@@ -13,7 +13,7 @@ export class ListService {
 
   constructor(private http: HttpClient) { }
 
-  apiUrl = "https://request-service.services4eo.com/api/v1/services"
+  apiUrl = "https://request-service.reference.services4eo.com/api/v1/services"
 
   httpOptions = {
     headers: new HttpHeaders({

@@ -113,7 +113,7 @@ export class MapService {
   public wktPolygon: any;
   public observableDraw: any;
   private polygonArea?: any;
-
+  public p: number = 1;
 
 
 
@@ -143,12 +143,6 @@ export class MapService {
   public markerOptions: L.MarkerOptions = {
     icon: this.markerIcon,
   };
-
-
-
-
-
-
 
 
 
@@ -245,25 +239,29 @@ export class MapService {
 
   drawPolygon(lineOptions: L.PolylineOptions) {
     this.clearMap()
-    let map = this.map;
     let polygonDrawer = new L.Draw.Polygon(this.map).enable();
     this.polygonArea = new L.FeatureGroup();
     let editableLayers = this.polygonArea;
     this.map.addLayer(editableLayers);
+    let wkt = this.wktPolygon;
 
 
-    this.map.on(L.Draw.Event.CREATED, function (e) {
+    this.map.on(L.Draw.Event.CREATED, function (e: any) {
       let type = (e as L.DrawEvents.Created).layerType,
         layer = e.layer;
       editableLayers.addLayer(layer)
-
       if (type == "polygon") {
         let coord = layer.getBounds().getCenter();
         document.getElementById("coor")!.innerHTML = coord.toString();
-        layer.editing.enable()
-      }
-    })
+        wkt = convertToWK(layer.toGeoJSON());
+        console.log(wkt)
+        layer.editing.enable();
 
+      }
+
+
+
+    });
 
 
   }
@@ -287,6 +285,16 @@ export class MapService {
         document.getElementById("coor")!.innerHTML = coord.toString();
         layer.editing.enable();
       }
+
+    })
+
+    this.map.on(L.Draw.Event.EDITMOVE, function (event: any) {
+      let type = (event as L.DrawEvents.EditMove).type,
+        layer = event.layer;
+      editableLayers.addLayer(layer)
+      let coord = layer._latlng;
+      document.getElementById("coor")!.innerHTML = coord.toString();
+
 
     })
 
@@ -316,6 +324,8 @@ export class MapService {
       }
 
     })
+
+
 
 
 

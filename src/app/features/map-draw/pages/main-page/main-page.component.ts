@@ -48,9 +48,9 @@ export class MainPageComponent implements OnInit {
 
 
   searchServices() {
-
-
-
+    this.mapService.wktPolygon = "POLYGON ((-9.166718 38.760058, -9.127579 38.718843, -9.185944 38.703314, -9.166718 38.760058))"
+   
+    return this.api.getServicesByPolygon(this.p,this.mapService.wktPolygon).subscribe(data => console.log(this.results.results = data));
     //.subscribe(data => this.results.results = data);
     
 
