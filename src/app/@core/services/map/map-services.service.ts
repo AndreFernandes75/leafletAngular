@@ -130,12 +130,6 @@ export class MapService {
 
 
 
-  public removePointMarker() {
-    if (this.pointMarker !== undefined) {
-      this.map.removeLayer(this.pointMarker);
-      this.pointMarker = undefined;
-    }
-  }
 
   public lineOptions: L.PolylineOptions =
     {
@@ -221,15 +215,15 @@ export class MapService {
   public clearMap(): void {
 
     if (this.polygonArea) {
-      this.map?.removeLayer(this.polygonArea);
+      this.map.removeLayer(this.polygonArea);
       document.getElementById("coor")!.innerHTML = ""
     }
     if (this.markerArea) {
-      this.map?.removeLayer(this.markerArea)
+      this.map.removeLayer(this.markerArea)
       document.getElementById("coor")!.innerHTML = ""
     }
     if (this.circleArea) {
-      this.map?.removeLayer(this.circleArea)
+      this.map.removeLayer(this.circleArea)
       document.getElementById("coor")!.innerHTML = ""
     }
     if (this.shapeFileLayerGroup) {
@@ -271,6 +265,7 @@ export class MapService {
         let coord = layer.getBounds().getCenter();
         document.getElementById("coor")!.innerHTML = coord.toString();
         this.value = this.observeDrawingLayer(layer, type,this.page);
+        console.log(layer)
         layer.editing.enable()
       }
       
@@ -286,7 +281,7 @@ export class MapService {
 
 
    pinMarker(markerOptions: L.MarkerOptions) {
-
+  
     this.clearMap();
     let markerDrawer = new L.Draw.Marker(this.map).enable();
     this.markerArea = new L.FeatureGroup();
@@ -299,10 +294,13 @@ export class MapService {
       editableLayers.addLayer(layer);
 
       if (type == "marker") {
+        
         let coord = layer._latlng;
         document.getElementById("coor")!.innerHTML = coord.toString();
         this.value = this.observeDrawingLayer(layer, type,this.page);
+        console.log(layer)
         layer.editing.enable()
+
       }
 
     })
@@ -313,7 +311,7 @@ export class MapService {
       editableLayers.addLayer(layer)
       let coord = layer._latlng;
       document.getElementById("coor")!.innerHTML = coord.toString();
-
+   
 
     })
     
