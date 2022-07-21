@@ -6,13 +6,20 @@ import 'leaflet-draw';
 import { on } from 'events';
 import { convertToWK, parseFromWK } from 'wkt-parser-helper';
 import * as shp from 'shpjs';
-import { map, Observable } from 'rxjs';
+import { AsyncSubject, BehaviorSubject, map, Observable, ObservableInput, throwError } from 'rxjs';
 import { ListService } from '../listOfServices/list.service';
 import { threadId } from 'worker_threads';
+import { HttpClient } from '@angular/common/http';
+import { rejects } from 'assert';
+import { waitForAsync } from '@angular/core/testing';
 
 
 
 export { ZERO_OPACITY, HALF_OPACITY };
+
+type DrawingLayer =
+| { wkt: string; layer: L.Polygon | L.Polyline | L.Marker; type: string }
+|null;
 
 
 
@@ -26,8 +33,12 @@ const HALF_OPACITY = 0.5;
 })
 
 export class MapService {
+  
+  public drawingLayer$: BehaviorSubject<DrawingLayer>;
 
-  constructor(public api: ListService) { }
+  constructor(public api: ListService, private http: HttpClient) {this.drawingLayer$ = new BehaviorSubject<DrawingLayer>(null) }
+
+ 
 
 
 
@@ -101,7 +112,7 @@ export class MapService {
   public map!: L.DrawMap;
   public drawOptions: any;
   public coordinates: any;
-  //private polygonArea?: L.Polygon;//ELIMINAR DEPOIS
+  //private polygonArea?: L.Polygon;
   private circleArea?: any;
   title = 'leafletAngular';
   private markerArea?: any;
@@ -110,10 +121,12 @@ export class MapService {
   private populatedLayer?: L.GeoJSON;
   private shapeLayer?: L.GeoJSON;
   private shapeFileLayerGroup!: L.FeatureGroup;
-  public wktPolygon: any;
   public observableDraw: any;
   private polygonArea?: any;
-  public p: number = 1;
+  public page: number = 1;
+  public type:string="";
+
+
 
 
 
@@ -178,8 +191,8 @@ export class MapService {
         edit: false,
         remove: false,
         featureGroup: drawnItems,
-
-      }
+      },
+     
 
     });
 
@@ -193,14 +206,15 @@ export class MapService {
 
   }
 
-  //FUNCTION THAT OBSERVE THE LAYER AND THE EVENT.TYPE  
+  //FUNCTION THAT OBSERVE THE WKT  
   observeDrawingLayer(
     layer: L.Polygon | L.Polyline | L.Marker,
+    type:string,
     page: number,
 
   ) {
-    const wkt: any = convertToWK(layer.toGeoJSON());
-    return this.api.getServicesByPolygon(page, wkt);
+    const wkt:string = convertToWK(layer.toGeoJSON());
+    if(wkt)this.drawingLayer$.next({wkt,layer,type})
   }
 
   //FUNCTION THAT CLEAR EVERY DRAWS
@@ -234,56 +248,61 @@ export class MapService {
   //   selectedPathOptions: drawControl.options.edit.selectedPathOptions
   // })
 
+  public value: any;
+  
+  
 
+  drawPolygon(lineOptions: L.PolylineOptions){
 
-
-  drawPolygon(lineOptions: L.PolylineOptions) {
     this.clearMap()
     let polygonDrawer = new L.Draw.Polygon(this.map).enable();
     this.polygonArea = new L.FeatureGroup();
     let editableLayers = this.polygonArea;
     this.map.addLayer(editableLayers);
-    let wkt = this.wktPolygon;
+    
 
 
-    this.map.on(L.Draw.Event.CREATED, function (e: any) {
+    this.map.addEventListener(L.Draw.Event.CREATED, (e: any) => {
       let type = (e as L.DrawEvents.Created).layerType,
         layer = e.layer;
       editableLayers.addLayer(layer)
+
       if (type == "polygon") {
         let coord = layer.getBounds().getCenter();
         document.getElementById("coor")!.innerHTML = coord.toString();
-        wkt = convertToWK(layer.toGeoJSON());
-        console.log(wkt)
-        layer.editing.enable();
-
+        this.value = this.observeDrawingLayer(layer, type,this.page);
+        layer.editing.enable()
       }
-
-
+      
 
     });
 
-
+    
   }
 
 
 
-  pinMarker(markerOptions: L.MarkerOptions) {
+
+
+
+   pinMarker(markerOptions: L.MarkerOptions) {
 
     this.clearMap();
     let markerDrawer = new L.Draw.Marker(this.map).enable();
     this.markerArea = new L.FeatureGroup();
     let editableLayers = this.markerArea;
     this.map.addLayer(editableLayers);
-    this.map.on(L.Draw.Event.CREATED, function (e) {
+
+     this.map.addEventListener(L.Draw.Event.CREATED, (e: any) => {
       let type = (e as L.DrawEvents.Created).layerType,
         layer = e.layer;
-      editableLayers.addLayer(layer).dra;
+      editableLayers.addLayer(layer);
 
       if (type == "marker") {
         let coord = layer._latlng;
         document.getElementById("coor")!.innerHTML = coord.toString();
-        layer.editing.enable();
+        this.value = this.observeDrawingLayer(layer, type,this.page);
+        layer.editing.enable()
       }
 
     })
@@ -297,6 +316,10 @@ export class MapService {
 
 
     })
+    
+
+
+
 
 
 
@@ -312,14 +335,18 @@ export class MapService {
     this.circleArea = new L.FeatureGroup();
     let editableLayers = this.circleArea;
     this.map.addLayer(editableLayers);
-    this.map.on(L.Draw.Event.CREATED, function (e) {
+
+    this.map.addEventListener(L.Draw.Event.CREATED,  (e:any)=> {
       let type = (e as L.DrawEvents.Created).layerType,
         layer = e.layer;
       editableLayers.addLayer(layer);
 
       if (type == "circle") {
+
         let coord = layer._latlng;
         document.getElementById("coor")!.innerHTML = coord.toString();
+        this.value = this.observeDrawingLayer(layer, type,this.page);
+        layer.editing.enable()
 
       }
 

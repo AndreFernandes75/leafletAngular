@@ -26,7 +26,7 @@ export class ListService {
     return this.http.get(this.apiUrl + '?perPage=16' + '&page=' + page, { headers: this.httpOptions.headers });
   }
 
-  getServicesByPolygon(page: number, multi: MultiPolygon): Observable<any> {
+  getServicesByPolygon(page: number, multi: string): Observable<any> {
     return this.http.get(this.apiUrl + '?perPage=16' + '&page=' + page + '&aoi=' + multi, { headers: this.httpOptions.headers });
   }
 

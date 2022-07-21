@@ -5,9 +5,9 @@ import { FeatureCollection, multiPolygon } from '@turf/helpers';
 import * as shp from 'shpjs';
 import { convertFeatureToWK, parseFromWK } from 'wkt-parser-helper';
 import * as L from 'leaflet';
-import { Observable } from 'rxjs';
-import { waitForAsync } from '@angular/core/testing';
+import { Observable, from, takeUntil, take } from 'rxjs';
 import { ResultsComponent } from 'shared/components/results/results.component';
+import { data } from 'jquery';
 
 
 
@@ -21,7 +21,7 @@ import { ResultsComponent } from 'shared/components/results/results.component';
 export class MainPageComponent implements OnInit {
 
 
-  p: number = 1;
+  page: number = 1;
   flag: any;
 
 
@@ -30,33 +30,28 @@ export class MainPageComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.inputPage(this.p)
+    this.inputPage(this.page)
+
+    this.mapService.drawingLayer$.subscribe(data => {
+      if (data) this.api.getServicesByPolygon(this.page, data.wkt).pipe(take(1)).subscribe(data => this.results.results = data)
+
+    })
+
+
+
+
   }
 
   inputPage(number: number) {
     if (number == 1) {
-      this.p = 1;
-      return this.api.getServices(this.p).subscribe(data => this.results.results = data);
+      this.page = 1;
+      return this.api.getServices(this.page).subscribe(data => this.results.results = data);
     } else {
-      this.p = 17;
-      return this.api.getServices(this.p).subscribe(data => this.results.results = data);
+      this.page = 17;
+      return this.api.getServices(this.page).subscribe(data => this.results.results = data);
     }
 
   }
-
-
-
-
-  searchServices() {
-    this.mapService.wktPolygon = "POLYGON ((-9.166718 38.760058, -9.127579 38.718843, -9.185944 38.703314, -9.166718 38.760058))"
-
-    return this.api.getServicesByPolygon(this.p, this.mapService.wktPolygon).subscribe(data => console.log(this.results.results = data));
-    //.subscribe(data => this.results.results = data);
-
-
-  }
-
-
 
 
   onInput(event: Event) {
@@ -100,8 +95,7 @@ export class MainPageComponent implements OnInit {
   }
 
   public findService(action: any) {
-    console.log(this.mapService.coordinates)
-    console.log(action)
+
   }
 
 }
