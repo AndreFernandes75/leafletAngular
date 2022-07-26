@@ -45,7 +45,7 @@
         <p class="text-white text-2xl ">Choose how to draw</p>
     </div>
     <!--FOOTER BACKGROUND-->
-    <div class="bg-blue-400 grid justify-items-center">
+    <div class="bg-orange-500 grid justify-items-center">
         <!--FOOTER GRID OF ICONS AND BUTTONS-->
         <div class="grid grid-cols-4 p-2 w-6/12 justify-items-center ">
             <!--MARKER ICON-->
@@ -57,7 +57,7 @@
             <!--SHAPEFILE ICON-->
             <img src="/assets/file-upload.svg" class="h-8 w-8 ">
             <!--BUTTON MARKER-->
-            <button (click)="this.mapService.pinMarker(this.mapService.markerOptions)">
+            <button (click)="this.mapService.pinMarker()">
                 <p class="text-white hover:text-black bg-gradient-to-b from-blue-500 to-blue-600 p-2 rounded mt-2">Draw
                     a
                     marker
@@ -65,14 +65,14 @@
                 </p>
             </button>
             <!--BUTTON CIRCLE-->
-            <button (click)="this.mapService.drawCircle(this.mapService.lineOptions)">
+            <button (click)="this.mapService.drawCircle()">
                 <p class="text-white hover:text-black bg-gradient-to-b from-blue-500 to-blue-600 p-2 rounded mt-2">Draw
                     a
                     circle
                 </p>
             </button>
             <!--BUTTON POLYGON-->
-            <button (click)="this.mapService.drawPolygon(this.mapService.lineOptions)">
+            <button (click)="this.mapService.drawPolygon()">
                 <p class="text-white hover:text-black bg-gradient-to-b from-blue-500 to-blue-600 p-2 rounded mt-2">Draw
                     a
                     polygon

@@ -18,8 +18,8 @@ import { waitForAsync } from '@angular/core/testing';
 export { ZERO_OPACITY, HALF_OPACITY };
 
 type DrawingLayer =
-| { wkt: string; layer: L.Polygon | L.Polyline | L.Marker; type: string }
-|null;
+  | { wkt: string; layer: L.Polygon | L.Polyline | L.Marker; type: string }
+  | null;
 
 
 
@@ -33,12 +33,12 @@ const HALF_OPACITY = 0.5;
 })
 
 export class MapService {
-  
+
   public drawingLayer$: BehaviorSubject<DrawingLayer>;
 
-  constructor(public api: ListService, private http: HttpClient) {this.drawingLayer$ = new BehaviorSubject<DrawingLayer>(null) }
+  constructor(public api: ListService, private http: HttpClient) { this.drawingLayer$ = new BehaviorSubject<DrawingLayer>(null) }
 
- 
+
 
 
 
@@ -107,49 +107,21 @@ export class MapService {
   };
 
 
-
-
   public map!: L.DrawMap;
-  public drawOptions: any;
   public coordinates: any;
   //private polygonArea?: L.Polygon;
   private circleArea?: any;
   title = 'leafletAngular';
   private markerArea?: any;
-  public pointMarker: any;
-  public getPoint: boolean = false;
   private populatedLayer?: L.GeoJSON;
   private shapeLayer?: L.GeoJSON;
   private shapeFileLayerGroup!: L.FeatureGroup;
   public observableDraw: any;
   private polygonArea?: any;
   public page: number = 1;
-  public type:string="";
+  public value: any;
 
 
-
-
-
-
-  public lineOptions: L.PolylineOptions =
-    {
-      color: '#ff0000', lineJoin: 'round',
-    };
-
-
-
-  private markerIcon = L.icon({
-    iconUrl: 'assets/marker.svg',
-    iconSize: [38, 95], // size of the icon
-    shadowSize: [50, 64], // size of the shadow
-    iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
-    shadowAnchor: [4, 62], // the same for the shadow
-    popupAnchor: [-3, -76], // point from which the popup should open relative to the iconAnchor
-  });
-
-  public markerOptions: L.MarkerOptions = {
-    icon: this.markerIcon,
-  };
 
 
 
@@ -186,11 +158,9 @@ export class MapService {
         remove: false,
         featureGroup: drawnItems,
       },
-     
+
 
     });
-
-
 
     this.map.addControl(drawControl);
     this.map.setView(center, initialZoom);
@@ -203,12 +173,12 @@ export class MapService {
   //FUNCTION THAT OBSERVE THE WKT  
   observeDrawingLayer(
     layer: L.Polygon | L.Polyline | L.Marker,
-    type:string,
+    type: string,
     page: number,
 
   ) {
-    const wkt:string = convertToWK(layer.toGeoJSON());
-    if(wkt)this.drawingLayer$.next({wkt,layer,type})
+    const wkt: string = convertToWK(layer.toGeoJSON());
+    if (wkt) this.drawingLayer$.next({ wkt, layer, type })
   }
 
   //FUNCTION THAT CLEAR EVERY DRAWS
@@ -234,26 +204,14 @@ export class MapService {
 
 
 
-
-
-
-  // public editTool = new L.EditToolbar.Edit(this.map, {
-  //   featureGroup: drawControl.options.featureGroup,
-  //   selectedPathOptions: drawControl.options.edit.selectedPathOptions
-  // })
-
-  public value: any;
-  
-  
-
-  drawPolygon(lineOptions: L.PolylineOptions){
+  drawPolygon() {
 
     this.clearMap()
     let polygonDrawer = new L.Draw.Polygon(this.map).enable();
     this.polygonArea = new L.FeatureGroup();
     let editableLayers = this.polygonArea;
     this.map.addLayer(editableLayers);
-    
+
 
 
     this.map.addEventListener(L.Draw.Event.CREATED, (e: any) => {
@@ -264,40 +222,34 @@ export class MapService {
       if (type == "polygon") {
         let coord = layer.getBounds().getCenter();
         document.getElementById("coor")!.innerHTML = coord.toString();
-        this.value = this.observeDrawingLayer(layer, type,this.page);
-        console.log(layer)
+        this.value = this.observeDrawingLayer(layer, type, this.page);
         layer.editing.enable()
       }
-      
+
 
     });
 
-    
+
   }
 
+  pinMarker() {
 
-
-
-
-
-   pinMarker(markerOptions: L.MarkerOptions) {
-  
     this.clearMap();
     let markerDrawer = new L.Draw.Marker(this.map).enable();
     this.markerArea = new L.FeatureGroup();
     let editableLayers = this.markerArea;
     this.map.addLayer(editableLayers);
 
-     this.map.addEventListener(L.Draw.Event.CREATED, (e: any) => {
+    this.map.addEventListener(L.Draw.Event.CREATED, (e: any) => {
       let type = (e as L.DrawEvents.Created).layerType,
         layer = e.layer;
       editableLayers.addLayer(layer);
 
       if (type == "marker") {
-        
+
         let coord = layer._latlng;
         document.getElementById("coor")!.innerHTML = coord.toString();
-        this.value = this.observeDrawingLayer(layer, type,this.page);
+        this.value = this.observeDrawingLayer(layer, type, this.page);
         console.log(layer)
         layer.editing.enable()
 
@@ -311,22 +263,16 @@ export class MapService {
       editableLayers.addLayer(layer)
       let coord = layer._latlng;
       document.getElementById("coor")!.innerHTML = coord.toString();
-   
+
 
     })
-    
-
-
-
-
-
 
   }
 
 
 
 
-  drawCircle(lineOptions: L.CircleMarkerOptions) {
+  drawCircle() {
 
     this.clearMap();
     let circleDrawer = new L.Draw.Circle(this.map).enable();
@@ -334,7 +280,7 @@ export class MapService {
     let editableLayers = this.circleArea;
     this.map.addLayer(editableLayers);
 
-    this.map.addEventListener(L.Draw.Event.CREATED,  (e:any)=> {
+    this.map.addEventListener(L.Draw.Event.CREATED, (e: any) => {
       let type = (e as L.DrawEvents.Created).layerType,
         layer = e.layer;
       editableLayers.addLayer(layer);
@@ -343,16 +289,12 @@ export class MapService {
 
         let coord = layer._latlng;
         document.getElementById("coor")!.innerHTML = coord.toString();
-        this.value = this.observeDrawingLayer(layer, type,this.page);
+        this.value = this.observeDrawingLayer(layer, type, this.page);
         layer.editing.enable()
 
       }
 
     })
-
-
-
-
 
 
   }
@@ -439,29 +381,3 @@ export class MapService {
 }
 
 
-
-
-//CÓDIGO LEAFLET EDITABLE
-// drawCircle(lineOptions: L.CircleMarkerOptions): void {
-//   //CLEAR THE PREVIOUS DRAWS
-//   this.clearMap();
-
-//   //ADD EVENT LISTENNER TO THE BUTTON AND ALLOW DRAW AND DRAG
-//   this.map.addEventListener(DRAWING_COMMIT, (event) => {
-//     const layer: L.Polygon = event.layer
-//     this.polygonArea = layer
-//     this.observeDrawingLayer(layer, 17);
-
-
-//     //FUNCTION THAT ALLOW TO KNOW THE COORDINATES AND UPDATE EVERY TIME WHEN IS DRAG
-//     this.polygonArea.on('editable:vertex:dragend', function (e) {
-//       let coord = layer.getBounds().getCenter();
-//       document.getElementById("coor")!.innerHTML = coord.toString()
-
-//     });
-
-//   });
-//   //LINE THAT STARTS THE FUNCTION TO DRAW A CIRCLE
-//   this.map.editTools.startCircle(undefined, lineOptions);
-
-// }

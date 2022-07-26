@@ -5,9 +5,9 @@ import { FeatureCollection, multiPolygon } from '@turf/helpers';
 import * as shp from 'shpjs';
 import { convertFeatureToWK, parseFromWK } from 'wkt-parser-helper';
 import * as L from 'leaflet';
-import { Observable, from, takeUntil, take } from 'rxjs';
+import { Observable, take } from 'rxjs';
 import { ResultsComponent } from 'shared/components/results/results.component';
-import { data } from 'jquery';
+
 
 
 
