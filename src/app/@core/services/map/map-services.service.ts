@@ -27,7 +27,6 @@ const ZERO_OPACITY = 0;
 const HALF_OPACITY = 0.5;
 
 
-
 @Injectable({
   providedIn: 'root'
 })
@@ -109,15 +108,14 @@ export class MapService {
 
   public map!: L.DrawMap;
   public coordinates: any;
-  //private polygonArea?: L.Polygon;
   private circleArea?: any;
-  title = 'leafletAngular';
+  private polygonArea?: any;
   private markerArea?: any;
+  title = 'leafletAngular';
   private populatedLayer?: L.GeoJSON;
   private shapeLayer?: L.GeoJSON;
   private shapeFileLayerGroup!: L.FeatureGroup;
   public observableDraw: any;
-  private polygonArea?: any;
   public page: number = 1;
   public value: any;
 
@@ -142,9 +140,9 @@ export class MapService {
       zoomControl: false,
       maxBoundsViscosity: 1.0,
     });
-    var drawnItems = new L.FeatureGroup();
+    let drawnItems = new L.FeatureGroup();
     this.map.addLayer(drawnItems);
-    var drawControl = new L.Control.Draw({
+    let drawControl = new L.Control.Draw({
       draw: {
         polygon: false,
         marker: false,
@@ -189,7 +187,7 @@ export class MapService {
       document.getElementById("coor")!.innerHTML = ""
     }
     if (this.markerArea) {
-      this.map.removeLayer(this.markerArea)
+      this.map.removeLayer(this.markerArea);
       document.getElementById("coor")!.innerHTML = ""
     }
     if (this.circleArea) {
@@ -224,6 +222,7 @@ export class MapService {
         document.getElementById("coor")!.innerHTML = coord.toString();
         this.value = this.observeDrawingLayer(layer, type, this.page);
         layer.editing.enable()
+        //WARNING -> Deprecated use of _flat, please use L.LineUtil.isFlat instead. -> BUG WITH DRAW LIBRARY
       }
 
 
@@ -244,28 +243,24 @@ export class MapService {
       let type = (e as L.DrawEvents.Created).layerType,
         layer = e.layer;
       editableLayers.addLayer(layer);
+      
 
       if (type == "marker") {
 
         let coord = layer._latlng;
         document.getElementById("coor")!.innerHTML = coord.toString();
         this.value = this.observeDrawingLayer(layer, type, this.page);
-        console.log(layer)
-        layer.editing.enable()
+        
+        layer.editing.enable() 
+        //ERROR -> Cannot read properties of undefined (reading 'enable')->BUG WITH DRAW LIBRARY
+
+      
 
       }
+      
+    });
 
-    })
-
-    this.map.on(L.Draw.Event.EDITMOVE, function (event: any) {
-      let type = (event as L.DrawEvents.EditMove).type,
-        layer = event.layer;
-      editableLayers.addLayer(layer)
-      let coord = layer._latlng;
-      document.getElementById("coor")!.innerHTML = coord.toString();
-
-
-    })
+    
 
   }
 
@@ -290,7 +285,7 @@ export class MapService {
         let coord = layer._latlng;
         document.getElementById("coor")!.innerHTML = coord.toString();
         this.value = this.observeDrawingLayer(layer, type, this.page);
-        layer.editing.enable()
+        
 
       }
 

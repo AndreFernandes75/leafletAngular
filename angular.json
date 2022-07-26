@@ -39,7 +39,8 @@
               "concaveman",
               "geojson-rbush",
               "deep-equal",
-              "shpjs"
+              "shpjs",
+              "leaflet"
             ]
           },
           "configurations": {
@@ -112,5 +113,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }
